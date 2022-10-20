@@ -25,11 +25,16 @@ import torch
 # Transformations for evaluation
 ##
 class ToTensorTest(object):
-    """
-    Convert np.ndarrays in sample to Tensors.
-    """
+    """Convert np.ndarrays in sample to Tensors."""
 
     def __call__(self, img):
+        """
+        Convertes the image to float within range [0, 1] and make it torch compatible
+        :param: ToTensorTest: self
+        :param : ndarray :img
+        :return: ndarray :img
+        """
+
         img = img.astype(np.float32)
 
         # Normalize and clamp between 0 and 1
@@ -44,11 +49,14 @@ class ToTensorTest(object):
 
 
 class ZeroPad2DTest(object):
+    """Pad the input with zeros to get output size"""
+
     def __init__(self, output_size, pos='top_left'):
         """
-         Pad the input with zeros to get output size
-        :param output_size:
-        :param pos: position to put the input
+        initialises the class with given params
+        :param: ZerPad2DTest: self
+        :param: : output_size: size of output
+        :param: str: pos: position
         """
         if isinstance(output_size, Number):
             output_size = (int(output_size), ) * 2
@@ -56,6 +64,13 @@ class ZeroPad2DTest(object):
         self.pos = pos
 
     def _pad(self, image):
+        """ [help]
+        pads zeros of the input image
+        :param: ZerPad2DTest: self:
+        :param: ndarray: image: the image to pad
+        :return: ndarray: original image with padded zeros
+        """
+
         if len(image.shape) == 2:
             h, w = image.shape
             padded_img = np.zeros(self.output_size, dtype=image.dtype)
@@ -69,6 +84,12 @@ class ZeroPad2DTest(object):
         return padded_img
 
     def __call__(self, img):
+        """
+        calls the _pad() function
+        :param: ZerPad2DTest: self:
+        :param: ndarray: image: the image to pad
+        :return: ndarray: original image with padded zeros
+        """
 
         img = self._pad(img)
 
@@ -79,11 +100,16 @@ class ZeroPad2DTest(object):
 # Transformations for training
 ##
 class ToTensor(object):
-    """
-    Convert ndarrays in sample to Tensors.
-    """
+    """Convert ndarrays in sample to Tensors."""
 
     def __call__(self, sample):
+        """[help]
+        [tutorial]
+        :param: ToTensor: self:
+        :param: :sample: sample object
+        :return: Dict[str, Tensor] : [value]
+        """
+
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
 
         img = img.astype(np.float32)
@@ -115,6 +141,12 @@ class ZeroPad2D(object):
         self.pos = pos
 
     def _pad(self, image):
+        """
+        [tutorial]
+        :param: : :
+        :return: :
+         """
+
         if len(image.shape) == 2:
             h, w = image.shape
             padded_img = np.zeros(self.output_size, dtype=image.dtype)
@@ -143,6 +175,12 @@ class AddGaussianNoise(object):
         self.mean = mean
 
     def __call__(self, sample):
+        """
+        [tutorial]
+        :param: : :
+        :return: :
+         """
+
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
         # change 1 to sf.size() for isotropic scale factors (now same noise change added to both dims)
         sf = sf + torch.randn(1) * self.std + self.mean

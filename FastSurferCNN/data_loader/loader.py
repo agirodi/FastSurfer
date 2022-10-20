@@ -27,11 +27,12 @@ logger = logging.getLogger(__name__)
 
 def get_dataloader(cfg, mode):
     """
-        Creating the dataset and pytorch data loader
+    Creating the dataset and pytorch data loader
     :param cfg:
     :param mode: loading data for train, val and test mode
     :return:
     """
+
     assert mode in ['train', 'val'], f"dataloader mode is incorrect {mode}"
 
     padding_size = cfg.DATA.PADDED_SIZE

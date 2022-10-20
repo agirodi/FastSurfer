@@ -1,3 +1,4 @@
+
 # Copyright 2019 Image Analysis Lab, German Center for Neurodegenerative Diseases (DZNE), Bonn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -44,6 +45,13 @@ LOGGER = logging.getLogger(__name__)
 # Processing
 ##
 def set_up_cfgs(cfg, args):
+    """
+    sets up configurations with given args
+    :param: : cfg: configurations
+    :param: {out_dir, batch_size}: args:
+    :return: configuration
+    """
+
     cfg = load_config(cfg)
     cfg.OUT_LOG_DIR = args.out_dir if args.out_dir is not None else cfg.LOG_DIR
     cfg.OUT_LOG_NAME = "fastsurfer"
@@ -56,8 +64,11 @@ def set_up_cfgs(cfg, args):
 
 def args2cfg(args: argparse.Namespace):
     """
-    Extract the configuration objects from the arguments.
+    converges args to configurations
+    :param: args: argparse.Namespace: arguments
+    :return: {cfg_fin, cfg_cor, cfg_sag, cfg_ax}
     """
+
     cfg_cor = set_up_cfgs(args.cfg_cor, args) if args.cfg_cor is not None else None
     cfg_sag = set_up_cfgs(args.cfg_sag, args) if args.cfg_sag is not None else None
     cfg_ax = set_up_cfgs(args.cfg_ax, args) if args.cfg_ax is not None else None
@@ -78,6 +89,21 @@ def removesuffix(string, suffix):
 # Input array preparation
 ##
 class RunModelOnData:
+    """
+    is a class that runs the model prediction on given data [help]
+    :function: __init__(): constructor
+    :function: set_and_create_outdir(): sets and creates output directory
+    :function: conform_and_save_orig(): saves original image
+    :function: set_subject(): setter
+    :function: get_subject_name(): getter
+    :function: set_model(): setter
+    :function: run_model(): calculates prediction
+    :function: get_img(): getter
+    :function: save_img(): saves image as file
+    :function: set_up_model_params(): setter
+    :function: get_num_classes(): getter
+    """
+
     pred_name: str
     conf_name: str
     orig_name: str
@@ -88,6 +114,12 @@ class RunModelOnData:
     conform_to_1mm_threshold: Optional[float]
 
     def __init__(self, args):
+        """
+        initialises the RunModelOnData object
+        :param: RunModelOnData: self:
+        :param: : args: arguments for object
+        """
+
         self.pred_name = args.pred_name
         self.conf_name = args.conf_name
         self.orig_name = args.orig_name
@@ -149,6 +181,13 @@ class RunModelOnData:
         self.conform_to_1mm_threshold = args.conform_to_1mm_threshold
 
     def set_and_create_outdir(self, out_dir: str) -> str:
+        """
+            sets the directory of the output to the given path and creates one if non-existent
+            :param: RunModelOnData: self:
+            :param: str: out_dir: directory of output
+            :return: str: directory of output
+         """
+
         if os.path.isabs(self.pred_name):
             # Full path defined for input image, extract out_dir from there
             tmp = os.path.dirname(self.pred_name)
@@ -166,6 +205,13 @@ class RunModelOnData:
         return self.out_dir
 
     def conform_and_save_orig(self, orig_str: str) -> Tuple[nib.analyze.SpatialImage, np.ndarray]:
+        """
+            Saves the input image after conforming it
+            :param: RunModelOnData: self:
+            :param: str: orig_str: original image name
+            :return: {SpatialImage, ndarray}: conformed image and image data
+         """
+
         orig, orig_data = self.get_img(orig_str)
 
         # Save input image to standard location
@@ -196,6 +242,16 @@ class RunModelOnData:
         self.current_plane = plane
 
     def get_prediction(self, orig_f: str, orig_data: np.ndarray, zoom: Union[np.ndarray, tuple]) -> np.ndarray:
+        """
+            get prediction
+            :param: RunModelOnData: self:
+            :param: torch.Tensor: out: output tensor
+            :param: str: orig_f: original image filename
+            :param: np.ndarray: orig_data: original image date
+            :param: Union[np.ndarray, tuple]: zooms: original zoom
+            :return: Tensor: predicted classes
+         """
+
         shape = orig_data.shape + (self.get_num_classes(),)
         kwargs = {
             "device": self.viewagg_device,
@@ -231,6 +287,14 @@ class RunModelOnData:
     @staticmethod
     def save_img(save_as: str, data: Union[np.ndarray, torch.Tensor], orig: nib.analyze.SpatialImage,
                  dtype: Union[None, type] = None):
+        """
+            saves image as file
+            :param: str: save_as: filename to give image
+            :param: np.ndarray: data: image data
+            :param: nib.analyze.SpatialImage: orig: original Image
+            :param: bool: seg: segmentation (Default: False)
+        """
+
         # Create output directory if it does not already exist.
         if not os.path.exists(os.path.dirname(save_as)):
             LOGGER.info("Output image directory does not exist. Creating it now...")
@@ -255,6 +319,13 @@ class RunModelOnData:
 
 
 def handle_cuda_memory_exception(exception: RuntimeError, exit_on_out_of_memory: bool = True) -> bool:
+    """
+        prints error if is CUDA out of memory
+        :param: RuntimeError: excepion: the runtime exception
+        :param: bool: exit_on_out_of_memory: true if exited (Default = True)
+        :return: bool: true if cuda memory error
+     """
+
     if not isinstance(exception, RuntimeError):
         return False
     message = exception.args[0]

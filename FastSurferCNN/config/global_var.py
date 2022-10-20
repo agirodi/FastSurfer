@@ -44,6 +44,12 @@ CLASS_DICT = {"sagittal": {"aseg": ["3rd-Ventricle", "4th-Ventricle", "Brain-Ste
 
 
 def get_class_names(plane, options):
+    """
+    returns the in options request class names
+    :param: str :plane
+    :param: str :options
+    :return list: list of class names
+    """
     selection = []
     for opt in options:
         if plane == "sagittal":
