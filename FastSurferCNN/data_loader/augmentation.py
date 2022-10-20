@@ -25,7 +25,10 @@ import torch
 # Transformations for evaluation
 ##
 class ToTensorTest(object):
-    """Convert np.ndarrays in sample to Tensors."""
+    """
+    Convert np.ndarrays in sample to Tensors
+    :function: __call__: converts image
+    """
 
     def __call__(self, img):
         """
@@ -49,11 +52,16 @@ class ToTensorTest(object):
 
 
 class ZeroPad2DTest(object):
-    """Pad the input with zeros to get output size"""
+    """
+    Pad the input with zeros to get output size
+    :function: __init__: constructor
+    :function: pad: pads zeroes of image
+    :function: call: calls _pad()
+    """
 
     def __init__(self, output_size, pos='top_left'):
         """
-        initialises the class with given params
+        constructor
         :param: ZerPad2DTest: self
         :param: : output_size: size of output
         :param: str: pos: position
@@ -64,8 +72,8 @@ class ZeroPad2DTest(object):
         self.pos = pos
 
     def _pad(self, image):
-        """ [help]
-        pads zeros of the input image
+        """"
+        pads zeros of the input image [help]
         :param: ZerPad2DTest: self:
         :param: ndarray: image: the image to pad
         :return: ndarray: original image with padded zeros
@@ -100,11 +108,14 @@ class ZeroPad2DTest(object):
 # Transformations for training
 ##
 class ToTensor(object):
-    """Convert ndarrays in sample to Tensors."""
+    """
+    Convert ndarrays in sample to Tensors.
+    :function: __call__: converts image
+    """
 
     def __call__(self, sample):
         """[help]
-        [tutorial]
+        Convertes the image to float within range [0, 1] and make it torch compatible
         :param: ToTensor: self:
         :param: :sample: sample object
         :return: Dict[str, Tensor] : [value]
@@ -129,9 +140,15 @@ class ToTensor(object):
 
 
 class ZeroPad2D(object):
+    """
+    pads zeroes
+    :function: __init__: constructor
+    :function: _pad: pads zeroes of image
+    :function: __call__: cals _pad for sample
+    """
     def __init__(self, output_size, pos='top_left'):
         """
-         Pad the input with zeros to get output size
+        Pad the input with zeros to get output size
         :param output_size:
         :param pos: position to put the input
         """
@@ -141,11 +158,12 @@ class ZeroPad2D(object):
         self.pos = pos
 
     def _pad(self, image):
+        """"
+        pads zeros of the input image [help]
+        :param: ZerPad2DTest: self:
+        :param: ndarray: image: the image to pad
+        :return: ndarray: original image with padded zeros
         """
-        [tutorial]
-        :param: : :
-        :return: :
-         """
 
         if len(image.shape) == 2:
             h, w = image.shape
@@ -170,15 +188,19 @@ class ZeroPad2D(object):
 
 
 class AddGaussianNoise(object):
+    """
+    add noise to sample
+    :function: __call__: adds noise to scale factor
+    """
     def __init__(self, mean=0, std=0.1):
         self.std = std
         self.mean = mean
 
     def __call__(self, sample):
         """
-        [tutorial]
-        :param: : :
-        :return: :
+        adds gaussian noise to scalefactor
+        :param: {img, label, weight, scale_factor}: sample: sample to add noise
+        :return: {img, label, weight, scale_factor}: sample with noise
          """
 
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
@@ -190,6 +212,7 @@ class AddGaussianNoise(object):
 class AugmentationPadImage(object):
     """
     Pad Image with either zero padding or reflection padding of img, label and weight
+    :function: __call: pads zeroes
     """
 
     def __init__(self, pad_size=((16, 16), (16, 16)), pad_type="edge"):
@@ -208,6 +231,12 @@ class AugmentationPadImage(object):
         self.pad_type = pad_type
 
     def __call__(self, sample):
+        """
+        pads zeroes of sample image, label and weight
+        :param: AugementationPadImage: self: the object
+        :param: {img, label, weight, scale_factor}: sample: sample image and data
+        """
+
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
 
         img = np.pad(img, self.pad_size_image, self.pad_type)
@@ -220,6 +249,8 @@ class AugmentationPadImage(object):
 class AugmentationRandomCrop(object):
     """
     Randomly Crop Image to given size
+    :function: __init__: constructor
+    :function: __call__: crops the Augmentation
     """
 
     def __init__(self, output_size, crop_type='Random'):
@@ -235,6 +266,11 @@ class AugmentationRandomCrop(object):
         self.crop_type = crop_type
 
     def __call__(self, sample):
+        """[help]
+        crops the augmentation randomly
+        :param: AugmentationRandomCrop: self: the object
+        :param: {img, label, weight, scale_factor}: sample: sample image with data
+        """
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
 
         h, w, _ = img.shape

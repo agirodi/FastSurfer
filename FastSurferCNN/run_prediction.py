@@ -48,8 +48,8 @@ def set_up_cfgs(cfg, args):
     """
     sets up configurations with given args
     :param: : cfg: configurations
-    :param: {out_dir, batch_size}: args:
-    :return: configuration
+    :param: {out_dir, batch_size}: args: arguments
+    :return: : configuration
     """
 
     cfg = load_config(cfg)
@@ -90,7 +90,7 @@ def removesuffix(string, suffix):
 ##
 class RunModelOnData:
     """
-    is a class that runs the model prediction on given data [help]
+    runs the model prediction on given data [help]
     :function: __init__(): constructor
     :function: set_and_create_outdir(): sets and creates output directory
     :function: conform_and_save_orig(): saves original image
@@ -115,9 +115,9 @@ class RunModelOnData:
 
     def __init__(self, args):
         """
-        initialises the RunModelOnData object
-        :param: RunModelOnData: self:
-        :param: : args: arguments for object
+        constructor
+        :param: RunModelOnData: self: the object
+        :param: : args: arguments
         """
 
         self.pred_name = args.pred_name
@@ -183,7 +183,7 @@ class RunModelOnData:
     def set_and_create_outdir(self, out_dir: str) -> str:
         """
             sets the directory of the output to the given path and creates one if non-existent
-            :param: RunModelOnData: self:
+            :param: RunModelOnData: self: the object
             :param: str: out_dir: directory of output
             :return: str: directory of output
          """
@@ -207,7 +207,7 @@ class RunModelOnData:
     def conform_and_save_orig(self, orig_str: str) -> Tuple[nib.analyze.SpatialImage, np.ndarray]:
         """
             Saves the input image after conforming it
-            :param: RunModelOnData: self:
+            :param: RunModelOnData: self: the object
             :param: str: orig_str: original image name
             :return: {SpatialImage, ndarray}: conformed image and image data
          """
@@ -244,7 +244,7 @@ class RunModelOnData:
     def get_prediction(self, orig_f: str, orig_data: np.ndarray, zoom: Union[np.ndarray, tuple]) -> np.ndarray:
         """
             get prediction
-            :param: RunModelOnData: self:
+            :param: RunModelOnData: self: the object
             :param: torch.Tensor: out: output tensor
             :param: str: orig_f: original image filename
             :param: np.ndarray: orig_data: original image date
