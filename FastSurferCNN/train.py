@@ -39,7 +39,21 @@ logger = logging.getLogger(__name__)
 
 
 class Trainer:
+    """
+    trains [help]
+    :function: __init__: constructor
+    :function: train: trains the network
+    :function: eval: validates calculations
+    :function: run: performs training loop
+     """
+
     def __init__(self, cfg):
+        """
+        constructor
+        :param: Trainer: self: the object
+        :param: : cfg
+         """
+
         # Set random seed from configs.
         np.random.seed(cfg.RNG_SEED)
         torch.manual_seed(cfg.RNG_SEED)
@@ -66,6 +80,16 @@ class Trainer:
         self.subepoch = False if self.cfg.TRAIN.BATCH_SIZE == 16 else True
 
     def train(self, train_loader, optimizer, scheduler, train_meter, epoch):
+        """
+        trains the network to the given training data
+        :param: Trainer: self: the object
+        :param: : train_loader: [value]
+        :param: : optimizer: [value]
+        :param: : scheduler: [value]
+        :param: : train_meter: [value]
+        :param: : epoch: [value]
+         """
+
         self.model.train()
         logger.info("Training started ")
         epoch_start = time.time()
@@ -114,6 +138,15 @@ class Trainer:
 
     @torch.no_grad()
     def eval(self, val_loader, val_meter, epoch):
+        """
+        Evaluates model and calculates stats
+        :param: Trainer: self: the object
+        :param: : val_loader: [value]
+        :param: : val_meter: [value]
+        :param: : epoch: epoch to evaluate
+        :return: float: average miou [value]
+         """
+
         logger.info(f"Evaluating model at epoch {epoch}")
         self.model.eval()
 
@@ -199,6 +232,11 @@ class Trainer:
         return np.mean(np.mean(miou))
 
     def run(self):
+        """ [help]
+        transfers the model to devices, creates a tensor board summary writer and then performs the training loop
+        :param: Trainer: self: the object
+         """
+
         if self.cfg.NUM_GPUS > 1:
             assert self.cfg.NUM_GPUS <= torch.cuda.device_count(), \
                 "Cannot use more GPU devices than available"

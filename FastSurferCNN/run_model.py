@@ -25,7 +25,11 @@ from FastSurferCNN.train import Trainer
 
 
 def setup_options():
-    # Training settings
+    """
+    parse arguments
+    :return: ndarray: arguments
+     """
+
     parser = argparse.ArgumentParser(description='Segmentation')
 
     parser.add_argument(
@@ -52,6 +56,10 @@ def setup_options():
 
 
 def main():
+    """ [help]
+    first sets variables and then runs the trainer model
+     """
+
     args = setup_options()
     cfg = get_config(args)
 
