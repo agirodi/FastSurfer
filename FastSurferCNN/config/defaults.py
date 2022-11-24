@@ -233,7 +233,9 @@ _C.RNG_SEED = 1
 def get_cfg_defaults():
     """
     Get a yacs CfgNode object with default values for my_project.
-    :return: yacs.config.CfgNode: Clone of default CfgNode
+
+    Returns:
+        yacs.config.CfgNode: Clone of default CfgNode
     """
     # Return a clone so that the defaults will not be altered
     # This is for the "local variable" use pattern

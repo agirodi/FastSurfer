@@ -44,12 +44,17 @@ LOGGER = logging.getLogger(__name__)
 ##
 # Processing
 ##
-def set_up_cfgs(cfg, args):
-    """
-    sets up configurations with given args
-    :param: : cfg: configurations
-    :param: {out_dir, batch_size}: args: arguments
-    :return: : configuration
+def set_up_cfgs(cfg: str, args: argparse.Namespace):
+    """Setup of configuration
+
+    Sets up configurations with given arguments inside the yaml file
+
+    Args:
+        cfg (str): path to yaml file of configurations
+        args (argparse.Namespace): {out_dir, batch_size} arguments
+
+    Returns:
+        (str) CfgNode of configurations
     """
 
     cfg = load_config(cfg)
@@ -67,6 +72,9 @@ def args2cfg(args: argparse.Namespace):
     converges args to configurations
     :param: args: argparse.Namespace: arguments
     :return: {cfg_fin, cfg_cor, cfg_sag, cfg_ax}
+
+    Args:
+        args (argparse.Namespace):
     """
 
     cfg_cor = set_up_cfgs(args.cfg_cor, args) if args.cfg_cor is not None else None
@@ -91,17 +99,19 @@ def removesuffix(string, suffix):
 class RunModelOnData:
     """
     runs the model prediction on given data [help]
-    :function: __init__(): constructor
-    :function: set_and_create_outdir(): sets and creates output directory
-    :function: conform_and_save_orig(): saves original image
-    :function: set_subject(): setter
-    :function: get_subject_name(): getter
-    :function: set_model(): setter
-    :function: run_model(): calculates prediction
-    :function: get_img(): getter
-    :function: save_img(): saves image as file
-    :function: set_up_model_params(): setter
-    :function: get_num_classes(): getter
+
+    Functions:
+        __init__(): constructor
+        set_and_create_outdir(): sets and creates output directory
+        conform_and_save_orig(): saves original image
+        set_subject(): setter
+        get_subject_name(): getter
+        set_model(): setter
+        run_model(): calculates prediction
+        get_img(): getter
+        save_img(): saves image as file
+        set_up_model_params(): setter
+        get_num_classes(): getter
     """
 
     pred_name: str
@@ -116,8 +126,10 @@ class RunModelOnData:
     def __init__(self, args):
         """
         constructor
-        :param: RunModelOnData: self: the object
-        :param: : args: arguments
+
+        Args:
+            args (argparse.Namespace): {pred_name, conf_name, orig_name, strip, out_dir, run_viewagg_on, lut, gn,
+                ckpt_cor, ckpt_sag, ckpt_ax, device, hires} Series of arguments
         """
 
         self.pred_name = args.pred_name
@@ -182,10 +194,13 @@ class RunModelOnData:
 
     def set_and_create_outdir(self, out_dir: str) -> str:
         """
-            sets the directory of the output to the given path and creates one if non-existent
-            :param: RunModelOnData: self: the object
-            :param: str: out_dir: directory of output
-            :return: str: directory of output
+        sets the directory of the output to the given path and creates one if non-existent
+
+        Args:
+            out_dir (str): directory of output
+
+        Returns:
+            str: directory of output
          """
 
         if os.path.isabs(self.pred_name):
@@ -207,9 +222,12 @@ class RunModelOnData:
     def conform_and_save_orig(self, orig_str: str) -> Tuple[nib.analyze.SpatialImage, np.ndarray]:
         """
             Saves the input image after conforming it
-            :param: RunModelOnData: self: the object
-            :param: str: orig_str: original image name
-            :return: {SpatialImage, ndarray}: conformed image and image data
+
+        Args:
+            orig_str (str): original image name
+
+        Returns:
+            Tuple[nib.analyze.SpatialImage, np.ndarray]: conformed image and image data
          """
 
         orig, orig_data = self.get_img(orig_str)
@@ -244,12 +262,14 @@ class RunModelOnData:
     def get_prediction(self, orig_f: str, orig_data: np.ndarray, zoom: Union[np.ndarray, tuple]) -> np.ndarray:
         """
             get prediction
-            :param: RunModelOnData: self: the object
-            :param: torch.Tensor: out: output tensor
-            :param: str: orig_f: original image filename
-            :param: np.ndarray: orig_data: original image date
-            :param: Union[np.ndarray, tuple]: zooms: original zoom
-            :return: Tensor: predicted classes
+
+        Args:
+            orig_f (str): original image filename
+            orig_data (): original image data
+            zoom (Union[np.ndarray, tuple]): original zoom
+
+        Returns:
+            torch.Tensor: predicted classes
          """
 
         shape = orig_data.shape + (self.get_num_classes(),)
@@ -288,11 +308,13 @@ class RunModelOnData:
     def save_img(save_as: str, data: Union[np.ndarray, torch.Tensor], orig: nib.analyze.SpatialImage,
                  dtype: Union[None, type] = None):
         """
-            saves image as file
-            :param: str: save_as: filename to give image
-            :param: np.ndarray: data: image data
-            :param: nib.analyze.SpatialImage: orig: original Image
-            :param: bool: seg: segmentation (Default: False)
+            Saves image as file
+
+        Args:
+            save_as (str): filename to give image
+            data (np.ndarray): image data
+            orig (nib.analyze.SpatialImage): original Image
+            seg (bool): segmentation. Defaults to False
         """
 
         # Create output directory if it does not already exist.
@@ -320,10 +342,14 @@ class RunModelOnData:
 
 def handle_cuda_memory_exception(exception: RuntimeError, exit_on_out_of_memory: bool = True) -> bool:
     """
-        prints error if is CUDA out of memory
-        :param: RuntimeError: excepion: the runtime exception
-        :param: bool: exit_on_out_of_memory: true if exited (Default = True)
-        :return: bool: true if cuda memory error
+        Prints error if is CUDA is out of memory
+
+    Args:
+        exception (RuntimeError): the runtime exception
+        exit_on_out_of_memory (bool): true if exited. Defaults to True
+
+    Returns:
+        bool: Is true if cuda memory error
      """
 
     if not isinstance(exception, RuntimeError):

@@ -25,10 +25,13 @@ from FastSurferCNN.train import Trainer
 
 
 def setup_options():
+    """ Sets up the options parsed from STDIN
+
+    Parses arguments from the STDIN, including the flags: --cfg, --aug, --opt, opts,
+
+    Returns:
+        (argparse.Namespace) List of the given arguments
     """
-    parse arguments
-    :return: ndarray: arguments
-     """
 
     parser = argparse.ArgumentParser(description='Segmentation')
 

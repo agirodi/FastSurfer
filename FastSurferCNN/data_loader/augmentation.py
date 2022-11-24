@@ -1,4 +1,3 @@
-
 # Copyright 2019 Image Analysis Lab, German Center for Neurodegenerative Diseases (DZNE), Bonn
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -27,15 +26,20 @@ import torch
 class ToTensorTest(object):
     """
     Convert np.ndarrays in sample to Tensors
-    :function: __call__: converts image
+
+    Functions:
+        __call__: converts image
     """
 
     def __call__(self, img):
         """
         Convertes the image to float within range [0, 1] and make it torch compatible
-        :param: ToTensorTest: self
-        :param : ndarray :img
-        :return: ndarray :img
+
+        Args:
+            img (ndarray): image to be conformed
+
+        Returns:
+            ndarray: conformed image
         """
 
         img = img.astype(np.float32)
@@ -54,17 +58,20 @@ class ToTensorTest(object):
 class ZeroPad2DTest(object):
     """
     Pad the input with zeros to get output size
-    :function: __init__: constructor
-    :function: pad: pads zeroes of image
-    :function: call: calls _pad()
+
+    Functions:
+        __init__: constructor
+        pad: pads zeroes of image
+        call: calls _pad()
     """
 
     def __init__(self, output_size, pos='top_left'):
         """
-        constructor
-        :param: ZerPad2DTest: self
-        :param: : output_size: size of output
-        :param: str: pos: position
+        Constructor
+
+        Args:
+            output_size (float, Tuple[float, float]): size of the output image either as float or tuple of two floats
+            pos (str): position
         """
         if isinstance(output_size, Number):
             output_size = (int(output_size), ) * 2
@@ -74,9 +81,12 @@ class ZeroPad2DTest(object):
     def _pad(self, image):
         """"
         pads zeros of the input image [help]
-        :param: ZerPad2DTest: self:
-        :param: ndarray: image: the image to pad
-        :return: ndarray: original image with padded zeros
+
+        Args:
+            image (ndarray): The image to pad
+
+        Returns:
+            ndarray: original image with padded zeros
         """
 
         if len(image.shape) == 2:
@@ -94,9 +104,12 @@ class ZeroPad2DTest(object):
     def __call__(self, img):
         """
         calls the _pad() function
-        :param: ZerPad2DTest: self:
-        :param: ndarray: image: the image to pad
-        :return: ndarray: original image with padded zeros
+
+        Args:
+            img (ndarray):the image to pad
+
+        Returns:
+            ndarray: original image with padded zeros
         """
 
         img = self._pad(img)
@@ -110,15 +123,20 @@ class ZeroPad2DTest(object):
 class ToTensor(object):
     """
     Convert ndarrays in sample to Tensors.
-    :function: __call__: converts image
+
+    Functions:
+        __call__: converts image
     """
 
     def __call__(self, sample):
         """[help]
         Convertes the image to float within range [0, 1] and make it torch compatible
-        :param: ToTensor: self:
-        :param: :sample: sample object
-        :return: Dict[str, Tensor] : [value]
+
+        Args:
+            sample (): sample object
+
+        Returns:
+            Dict[str, Tensor]: [help]
         """
 
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
@@ -146,6 +164,7 @@ class ZeroPad2D(object):
     :function: _pad: pads zeroes of image
     :function: __call__: cals _pad for sample
     """
+
     def __init__(self, output_size, pos='top_left'):
         """
         Pad the input with zeros to get output size
@@ -192,6 +211,7 @@ class AddGaussianNoise(object):
     add noise to sample
     :function: __call__: adds noise to scale factor
     """
+
     def __init__(self, mean=0, std=0.1):
         self.std = std
         self.mean = mean
@@ -292,4 +312,3 @@ class AugmentationRandomCrop(object):
         weight = weight[top:bottom, left:right]
 
         return {'img': img, 'label': label, 'weight': weight, 'scale_factor': sf}
-

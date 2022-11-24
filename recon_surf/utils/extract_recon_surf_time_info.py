@@ -9,12 +9,14 @@ def get_recon_all_stage_duration(line, previous_datetime_str):
     """
     Extract the duration of a recon-all stage from its log string.
 
-    :param str line: line in recon-surf.log containing recon-all stage info.
-        This must be of the form:
-        #@# STAGE_NAME Fri Nov 26 15:51:40 UTC 2021
-    :param str previous_datetime_str: datetime string of the previous recon-all stage
+    Args:
+        line (str): line in recon-surf.log containing recon-all stage info.
+            This must be of the form:
+            #@# STAGE_NAME Fri Nov 26 15:51:40 UTC 2021
+        previous_datetime_str (str): datetime string of the previous recon-all stage
 
-    :return: str stage_duration: stage duration in seconds
+    Returns:
+        str: stage duration in seconds
     """
 
     current_datetime_str = ' '.join(line.split()[-6:])
