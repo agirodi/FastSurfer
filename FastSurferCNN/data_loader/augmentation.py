@@ -79,7 +79,7 @@ class ZeroPad2DTest(object):
         self.pos = pos
 
     def _pad(self, image):
-        """"
+        """
         pads zeros of the input image [help]
 
         Args:
@@ -160,16 +160,20 @@ class ToTensor(object):
 class ZeroPad2D(object):
     """
     pads zeroes
-    :function: __init__: constructor
-    :function: _pad: pads zeroes of image
-    :function: __call__: cals _pad for sample
+
+    Functions:
+        __init__: constructor
+        _pad: pads zeroes of image
+        __call__: cals _pad for sample
     """
 
     def __init__(self, output_size, pos='top_left'):
         """
-        Pad the input with zeros to get output size
-        :param output_size:
-        :param pos: position to put the input
+        Initializes position and output_size (as Tuple[float])
+
+        Args:
+            output_size (float, Tuple[float]):
+            pos (str): position to put the input
         """
         if isinstance(output_size, Number):
             output_size = (int(output_size), ) * 2
@@ -177,11 +181,14 @@ class ZeroPad2D(object):
         self.pos = pos
 
     def _pad(self, image):
-        """"
+        """
         pads zeros of the input image [help]
-        :param: ZerPad2DTest: self:
-        :param: ndarray: image: the image to pad
-        :return: ndarray: original image with padded zeros
+
+        Args:
+            image (ndarray): the image to pad
+
+        Returns:
+            ndarray: original image with padded zeros
         """
 
         if len(image.shape) == 2:
@@ -209,7 +216,9 @@ class ZeroPad2D(object):
 class AddGaussianNoise(object):
     """
     add noise to sample
-    :function: __call__: adds noise to scale factor
+
+    Functions:
+        __call__: adds noise to scale factor
     """
 
     def __init__(self, mean=0, std=0.1):
