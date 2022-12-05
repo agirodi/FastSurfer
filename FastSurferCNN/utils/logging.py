@@ -23,6 +23,9 @@ from sys import stdout as _stdout
 def setup_logging(log_file_path: str):
     """
     Sets up the logging
+
+    Args:
+        log_file_path (str): path to the log file
     """
     # Set up logging format.
     _FORMAT = "[%(levelname)s: %(filename)s: %(lineno)4d]: %(message)s"

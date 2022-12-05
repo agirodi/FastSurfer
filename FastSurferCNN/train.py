@@ -41,17 +41,20 @@ logger = logging.getLogger(__name__)
 class Trainer:
     """
     trains [help]
-    :function: __init__: constructor
-    :function: train: trains the network
-    :function: eval: validates calculations
-    :function: run: performs training loop
+
+    Functions:
+        __init__: constructor
+        train: trains the network
+        eval: validates calculations
+        run: performs training loop
      """
 
     def __init__(self, cfg):
         """
         constructor
-        :param: Trainer: self: the object
-        :param: : cfg
+
+        Args:
+            cfg (yacs.config.CfgNode): Node of configs to be used
          """
 
         # Set random seed from configs.
@@ -80,14 +83,15 @@ class Trainer:
         self.subepoch = False if self.cfg.TRAIN.BATCH_SIZE == 16 else True
 
     def train(self, train_loader, optimizer, scheduler, train_meter, epoch):
-        """
+        """ [help]
         trains the network to the given training data
-        :param: Trainer: self: the object
-        :param: : train_loader: [value]
-        :param: : optimizer: [value]
-        :param: : scheduler: [value]
-        :param: : train_meter: [value]
-        :param: : epoch: [value]
+
+        Args:
+            train_loader (DataLoader):
+            optimizer (Optimizer):
+            scheduler (Scheduler):
+            train_meter (Meter):
+            epoch (int):
          """
 
         self.model.train()
@@ -140,11 +144,14 @@ class Trainer:
     def eval(self, val_loader, val_meter, epoch):
         """
         Evaluates model and calculates stats
-        :param: Trainer: self: the object
-        :param: : val_loader: [value]
-        :param: : val_meter: [value]
-        :param: : epoch: epoch to evaluate
-        :return: float: average miou [value]
+
+        Args:
+            val_loader (Loader):
+            val_meter (Meter):
+            epoch (int): epoch to evaluate
+
+        Returns:
+            int, float, ndarray: median miou [value]
          """
 
         logger.info(f"Evaluating model at epoch {epoch}")
@@ -234,7 +241,6 @@ class Trainer:
     def run(self):
         """ [help]
         transfers the model to devices, creates a tensor board summary writer and then performs the training loop
-        :param: Trainer: self: the object
          """
 
         if self.cfg.NUM_GPUS > 1:

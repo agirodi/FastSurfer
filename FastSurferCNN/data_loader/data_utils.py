@@ -44,13 +44,19 @@ def load_and_conform_image(img_filename, interpol=1, logger=LOGGER, conform_min 
     """
     Function to load MRI image and conform it to UCHAR, RAS orientation and 1mm or minimum isotropic voxels size
     (if it does not already have this format)
-    :param str img_filename: path and name of volume to read
-    :param int interpol: interpolation order for image conformation (0=nearest,1=linear(default),2=quadratic,3=cubic)
-    :param logger logger: Logger to write output to (default = STDOUT)
-    :param: boolean: conform_min: conform image to minimal voxel size (for high-res) (Default = False)
-    :return: nibabel.MGHImage header_info: header information of the conformed image
-    :return: np.ndarray affine_info: affine information of the conformed image
-    :return: nibabel.MGHImage orig: conformed image
+
+
+
+    Args:
+        img_filename (str): path and name of volume to read
+        interpol (int): interpolation order for image conformation (0=nearest,1=linear(default),2=quadratic,3=cubic)
+        logger (logger): Logger to write output to (default = STDOUT)
+        conform_min (bool): conform image to minimal voxel size (for high-res) (Default = False)
+
+    Returns:
+        nibabel.MGHImage header_info: header information of the conformed image
+        np.ndarray affine_info: affine information of the conformed image
+        nibabel.MGHImage orig: conformed image
     """
     orig = nib.load(img_filename)
     # is_conform and conform accept numeric values and the string 'min' instead of the bool value
@@ -83,12 +89,16 @@ def save_image(header_info, affine_info, img_array, save_as, dtype=None):
     """
     Save an image (nibabel MGHImage), according to the desired output file format.
     Supported formats are defined in supported_output_file_formats.
-    :param numpy.ndarray img_array: an array containing image data
-    :param numpy.ndarray affine_info: image affine information
-    :param nibabel.freesurfer.mghformat.MGHHeader header_info: image header information
-    :param str save_as: name under which to save prediction; this determines output file format
-    :param type dtype: image array type; if provided, the image object is explicitly set to match this type
-    :return None: saves predictions to save_as
+
+    Args:
+        header_info (nibabel.freesurfer.mghformat.MGHHeader): image header information
+        affine_info (numpy.ndarray): image affine information
+        img_array (numpy.ndarray): an array containing image data
+        save_as (str): name under which to save prediction; this determines output file format
+        dtype (type): image array type; if provided, the image object is explicitly set to match this type
+
+    Returns:
+        None: saves predictions to save_as
     """
 
     assert any(save_as.endswith(file_ext) for file_ext in SUPPORTED_OUTPUT_FILE_FORMATS), \
@@ -115,11 +125,16 @@ def save_image(header_info, affine_info, img_array, save_as, dtype=None):
 def transform_axial(vol, coronal2axial=True):
     """
     Function to transform volume into Axial axis and back
-    :param np.ndarray vol: image volume to transform
-    :param bool coronal2axial: transform from coronal to axial = True (default),
+
+    Args:
+        vol (np.ndarray): image volume to transform
+        coronal2axial (bool):  transform from coronal to axial = True (default),
                                transform from axial to coronal = False
-    :return:
+
+    Returns:
+        np.ndarray : transformed volume
     """
+
     if coronal2axial:
         return np.moveaxis(vol, [0, 1, 2], [1, 2, 0])
     else:
@@ -129,11 +144,16 @@ def transform_axial(vol, coronal2axial=True):
 def transform_sagittal(vol, coronal2sagittal=True):
     """
     Function to transform volume into Sagittal axis and back
-    :param np.ndarray vol: image volume to transform
-    :param bool coronal2sagittal: transform from coronal to sagittal = True (default),
-                                transform from sagittal to coronal = False
-    :return:
+
+    Args:
+        vol (np.ndarray): image volume to transform
+        coronal2sagittal (bool): transform from coronal to sagittal = True (default),
+                                 transform from sagittal to coronal = False
+
+    Returns:
+        np.ndarray : transformed volume
     """
+
     if coronal2sagittal:
         return np.moveaxis(vol, [0, 1, 2], [2, 1, 0])
     else:
@@ -146,10 +166,15 @@ def get_thick_slices(img_data, slice_thickness=3):
     Function to extract thick slices from the image
     (feed slice_thickness preceeding and suceeding slices to network,
     label only middle one)
-    :param np.ndarray img_data: 3D MRI image read in with nibabel
-    :param int slice_thickness: number of slices to stack on top and below slice of interest (default=3)
-    :return:
+
+    Args:
+        img_data (np.ndarray): 3D MRI image read in with nibabel
+        slice_thickness (int): number of slices to stack on top and below slice of interest (default=3)
+
+    Returns:
+        np.ndarray: extracted slices
     """
+
     h, w, d = img_data.shape
     img_data_pad = np.expand_dims(np.pad(img_data, ((0, 0), (0, 0), (slice_thickness, slice_thickness)), mode='edge'),
                                   axis=3)
@@ -164,12 +189,19 @@ def get_thick_slices(img_data, slice_thickness=3):
 def filter_blank_slices_thick(img_vol, label_vol, weight_vol, threshold=50):
     """
     Function to filter blank slices from the volume using the label volume
-    :param np.ndarray img_vol: orig image volume
-    :param np.ndarray label_vol: label images (ground truth)
-    :param np.ndarray weight_vol: weight corresponding to labels
-    :param int threshold: threshold for number of pixels needed to keep slice (below = dropped)
-    :return:
+
+    Args:
+        img_vol (np.ndarray): orig image volume
+        label_vol (np.ndarray): label images (ground truth)
+        weight_vol (np.ndarray): weight corresponding to labels
+        threshold (int): threshold for number of pixels needed to keep slice (below = dropped) (default=50)
+
+    Returns:
+        np.ndarray: filtered img_vol
+        np.ndarray: filtered label_vol
+        np.ndarray: filtered weight_vol
     """
+
     # Get indices of all slices with more than threshold labels/pixels
     select_slices = (np.sum(label_vol, axis=(0, 1)) > threshold)
 
@@ -186,15 +218,19 @@ def create_weight_mask(mapped_aseg, max_weight=5, max_edge_weight=5, max_hires_w
                        mean_filter=False, cortex_mask=True, gradient=True):
     """
     Function to create weighted mask - with median frequency balancing and edge-weighting
-    :param np.ndarray mapped_aseg: segmentation to create weight mask from
-    :param int max_weight: maximal weight on median weights (cap at this value)
-    :param int max_edge_weight: maximal weight on gradient weight (cap at this value)
-    :param int max_hires_weight: maximal weight on hires weight (cap at this value)
-    :param int ctx_thresh: label value of cortex (above = cortical parcels)
-    :param bool mean_filter: flag, set to add mean_filter mask (default = False)
-    :param bool cortex_mask: flag, set to create cortex weight mask (default=True)
-    :param bool gradient: flag, set to create gradient mask (default = True)
-    :return np.ndarray: weights
+
+    Args:
+        mapped_aseg (np.ndarray): segmentation to create weight mask from
+        max_weight (int): maximal weight on median weights (cap at this value) (default=5)
+        max_edge_weight (int): maximal weight on gradient weight (cap at this value) (default=5)
+        max_hires_weight (int): maximal weight on hires weight (cap at this value) (default=None)
+        ctx_thresh (int): label value of cortex (above = cortical parcels) (default=33)
+        mean_filter (bool): flag, set to add mean_filter mask (default = False)
+        cortex_mask (bool): flag, set to create cortex weight mask (default=True)
+        gradient (bool): flag, set to create gradient mask (default = True)
+
+    Returns:
+        np.ndarray: weights
     """
     unique, counts = np.unique(mapped_aseg, return_counts=True)
 
@@ -235,11 +271,16 @@ def cortex_border_mask(label, structure, ctx_thresh=33):
     """
     Function to erode the cortex of a given mri image to create
     the inner gray matter mask (outer most cortex voxels)
-    :param np.ndarray label: ground truth labels.
-    :param np.ndarray structure: structuring element to erode with
-    :param int ctx_thresh: label value of cortex (above = cortical parcels)
-    :return: np.ndarray outer GM layer
+
+    Args:
+        label (np.ndarray): ground truth labels.
+        structure (np.ndarray): structuring element to erode with
+        ctx_thresh (int): label value of cortex (above = cortical parcels) (default=33)
+
+    Returns:
+        np.ndarray: inner grey matter mask
     """
+
     # create aseg brainmask, erode it and subtract from itself
     bm = np.clip(label, a_max=1, a_min=0)
     eroded = binary_erosion(bm, structure=structure)
@@ -256,12 +297,16 @@ def deep_sulci_and_wm_strand_mask(volume, structure, iteration=1, ctx_thresh=33)
     Function to get a binary mask of deep sulci and small white matter strands
      by using binary closing (erosion and dilation)
 
-    :param np.ndarray volume: loaded image (aseg, label space)
-    :param np.ndarray structure: structuring element (e.g. np.ones((3, 3, 3)))
-    :param int iteration: number of times mask should be dilated + eroded (default=1)
-    :param int ctx_thresh: label value of cortex (above = cortical parcels)
-    :return np.ndarray: sulcus + wm mask
+    Args:
+        volume (np.ndarray): loaded image (aseg, label space)
+        structure (np.ndarray): structuring element (e.g. np.ones((3, 3, 3)))
+        iteration (int): number of times mask should be dilated + eroded (default=1)
+        ctx_thresh (int): label value of cortex (above = cortical parcels) (default=33)
+
+    Returns:
+        np.ndarray: sulcus + wm mask
     """
+
     # Binarize label image (cortex = 1, everything else = 0)
     empty_im = np.zeros(shape=volume.shape)
     empty_im[volume > ctx_thresh] = 1  # > 33 (>19) = >1002 in FS LUT (full (sag))

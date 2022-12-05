@@ -98,15 +98,16 @@ def map_image(img: nib.analyze.SpatialImage, out_affine: np.ndarray, out_shape: 
     Function to map image to new voxel space (RAS orientation)
 
     Args:
-        img: the src 3D image with data and affine set
-        out_affine: trg image affine
-        out_shape: the trg shape information
-        ras2ras: an additional mapping that should be applied (default=id to just reslice)
-        order: order of interpolation (0=nearest,1=linear(default),2=quadratic,3=cubic)
+        img (nibabel.MGHImage): the src 3D image with data and affine set
+        out_affine (np.ndarray): trg image affine
+        out_shape (np.ndarray): the trg shape information
+        ras2ras (np.ndarray): ras2ras an additional mapping that should be applied (default=id to just reslice)
+        order (int): order of interpolation (0=nearest,1=linear(default),2=quadratic,3=cubic)
         dtype: target dtype of the resulting image (relevant for reorientation, default=same as img)
 
+
     Returns:
-        mapped image data array
+        np.ndarray: mapped image data array
     """
     from scipy.ndimage import affine_transform
     from numpy.linalg import inv
@@ -139,14 +140,15 @@ def getscale(data: np.ndarray, dst_min: float, dst_max: float,
     Equivalent to how mri_convert conforms images.
 
     Args:
-        data: image data (intensity values)
-        dst_min: future minimal intensity value
-        dst_max: future maximal intensity value
-        f_low: robust cropping at low end (0.0 no cropping, default)
-        f_high: robust cropping at higher end (0.999 crop one thousandth of high intensity voxels, default)
+        data (np.ndarray): image data (intensity values)
+        dst_min (float): future minimal intensity value
+        dst_max (float): future maximal intensity value
+        f_low (): robust cropping at low end (0.0 no cropping, default)
+        f_high (): robust cropping at higher end (0.999 crop one thousandth of high intensity voxels, default)
 
     Returns:
-        a tuple of the (adjusted) offset and the scale factor
+        float src_min: (adjusted) offset
+        float: scale factor
     """
     # get min and max from source
     src_min = np.min(data)
@@ -213,14 +215,14 @@ def scalecrop(data: np.ndarray, dst_min: float, dst_max: float, src_min: float, 
     Function to crop the intensity ranges to specific min and max values
 
     Args:
-        data: Image data (intensity values)
-        dst_min: future minimal intensity value
-        dst_max: future maximal intensity value
-        src_min: minimal value to consider from source (crops below)
-        scale: scale value by which source will be shifted
+        data (np.ndarray): Image data (intensity values)
+        dst_min (float): future minimal intensity value
+        dst_max (float): future maximal intensity value
+        src_min (float): minimal value to consider from source (crops below)
+        scale (float): scale value by which source will be shifted
 
     Returns:
-        scaled image data
+        np.ndarray: scaled image data
     """
     data_new = dst_min + scale * (data - src_min)
 
@@ -234,17 +236,17 @@ def scalecrop(data: np.ndarray, dst_min: float, dst_max: float, src_min: float, 
 def rescale(data: np.ndarray, dst_min: float, dst_max: float,
              f_low: float = 0.0, f_high: float = 0.999) -> np.ndarray:
     """
-    Function to rescale image intensity values (0-255).
+    Function to rescale image intensity values (0-255)
 
     Args:
-        data: image data (intensity values)
-        dst_min: future minimal intensity value
-        dst_max: future maximal intensity value
-        f_low: robust cropping at low end (0.0 no cropping, default)
-        f_high: robust cropping at higher end (0.999 crop one thousandth of high intensity voxels, default)
+        data (np.ndarray data): image data (intensity values)
+        dst_min (float): future minimal intensity value
+        dst_max (float): future maximal intensity value
+        f_low (float): robust cropping at low end (0.0 no cropping, default)
+        f_high (float): robust cropping at higher end (0.999 crop one thousandth of high intensity voxels, default)
 
     Returns:
-        scaled image data
+        np.ndarray data_new: scaled image data
     """
     src_min, scale = getscale(data, dst_min, dst_max, f_low, f_high)
     data_new = scalecrop(data, dst_min, dst_max, src_min, scale)
@@ -256,11 +258,11 @@ def find_min_size(img: nib.analyze.SpatialImage, max_size: float = 1) -> float:
     Function to find minimal voxel size <= 1mm.
 
     Args:
-        img: loaded source image
-        max_size: maximal voxel size in mm (default: 1.0)
+        img (nibabel.MGHImage): loaded source image
+        max_size (float): maximal voxel size in mm (default 1.0)
 
     Returns:
-        The rounded minimal voxel size
+        float min_size: rounded minimal voxel size
     """
     # find minimal voxel side length
     sizes = np.array(img.header.get_zooms()[:3])
@@ -275,9 +277,9 @@ def find_img_size_by_fov(img: nib.analyze.SpatialImage, vox_size: float, min_dim
     MUST always be min_dim (the FreeSurfer standard).
 
     Args:
-        img: loaded source image
-        vox_size: the target voxel size in mm
-        min_dim: minimal image dimension in voxels (default 256)
+        img (nibabel.MGHImage): loaded source image
+        vox_size (float): the target voxel size in mm
+        min_dim (int): minimal image dimension in voxels (default 256)
 
     Returns:
         The number of voxels needed to cover field of view.
@@ -309,9 +311,9 @@ def conform(img: nib.analyze.SpatialImage,
         the scale factor from the input to increase similarity.
 
     Args:
-        img: loaded source image
-        order: interpolation order (0=nearest,1=linear(default),2=quadratic,3=cubic)
-        conform_vox_size: conform image the image to voxel size 1. (default), a
+        img (nibabel.MGHImage): loaded source image
+        order (int): interpolation order (0=nearest,1=linear(default),2=quadratic,3=cubic)
+        conform_vox_size (float): conform image the image to voxel size 1. (default), a
             specific smaller voxel size (0-1, for high-res), or automatically
             determine the 'minimum voxel size' from the image (value 'min').
             This assumes the smallest of the three voxel sizes.
@@ -320,7 +322,7 @@ def conform(img: nib.analyze.SpatialImage,
             (default: ignore). 
 
     Returns:
-         conformed image
+        nibabel.MGHImage new_img: conformed image
     """
     from nibabel.freesurfer.mghformat import MGHHeader
 
@@ -386,24 +388,24 @@ def is_conform(img: nib.analyze.SpatialImage,
     Voxel size: 1x1x1, LIA orientation, and data type UCHAR).
 
     Args:
-        img: Loaded source image
+        img (nibabel.MGHImage): Loaded source image
         conform_vox_size: which voxel size to conform to. Can either be a float between 0.0 and
             1.0 or 'min' check, whether the image is conformed to the minimal voxels size, i.e.
             conforming to smaller, but isotropic voxel sizes for high-res (default: 1.0).
-        eps: allowed deviation from zero for LIA orientation check (default: 1e-06).
+        eps (float): allowed deviation from zero for LIA orientation check (default: 1e-06).
             Small inaccuracies can occur through the inversion operation. Already conformed
             images are thus sometimes not correctly recognized. The epsilon accounts for
             these small shifts.
-        check_dtype: specifies whether the UCHAR dtype condition is checked for;
+        check_dtype (bool): specifies whether the UCHAR dtype condition is checked for;
             this is not done when the input is a segmentation (default: True).
         dtype: specifies the intended target dtype (default: uint8 = UCHAR)
         verbose: if True, details of which conformance conditions are violated (if any)
             are displayed (default: True).
-        conform_to_1mm_threshold: the threshold above which the image is conformed to 1mm 
+        conform_to_1mm_threshold (bool): the threshold above which the image is conformed to 1mm 
             (default: ignore). 
 
     Returns:
-        whether the image is already conformed.
+        bool: whether the image is already conformed.
     """
 
     conformed_vox_size, conformed_img_size = get_conformed_vox_img_size(img, conform_vox_size,
@@ -475,14 +477,14 @@ def check_affine_in_nifti(img: Union[nib.Nifti1Image, nib.Nifti2Image], logger: 
     the function returns False (otherwise True).
 
     Args:
-        img: loaded nifti-image
-        logger: Logger object or None (default) to log or print an info message to
+        img (nibabel.NiftiImage):  loaded nifti-image
+        logger (logger): Logger object or None (default) to log or print an info message to
             stdout (for None)
 
     Returns:
-        True, if: affine was reset to qform voxel sizes in affine are equivalent to
-            voxel sizes in header
-        False, if: voxel sizes in affine and header differ
+        bool:   True, if: affine was reset to qform voxel sizes in affine are equivalent to
+                    voxel sizes in header
+                False, if: voxel sizes in affine and header differ
     """
     check = True
     message = ""

@@ -228,20 +228,28 @@ class AddGaussianNoise(object):
     def __call__(self, sample):
         """
         adds gaussian noise to scalefactor
-        :param: {img, label, weight, scale_factor}: sample: sample to add noise
-        :return: {img, label, weight, scale_factor}: sample with noise
+
+        Args:
+            sample (dict[str, float | int]): sample to add noise
+
+        Returns:
+             dict[str, float | int]: sample with noise
          """
 
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
         # change 1 to sf.size() for isotropic scale factors (now same noise change added to both dims)
         sf = sf + torch.randn(1) * self.std + self.mean
-        return {'img': img, 'label': label, 'weight': weight, 'scale_factor': sf}
+        a ={'img': img, 'label': label, 'weight': weight, 'scale_factor': sf}
+        return a
 
 
 class AugmentationPadImage(object):
     """
     Pad Image with either zero padding or reflection padding of img, label and weight
-    :function: __call: pads zeroes
+
+    Functions:
+        --init__: constructor
+        __call: pads zeroes
     """
 
     def __init__(self, pad_size=((16, 16), (16, 16)), pad_type="edge"):
@@ -262,8 +270,9 @@ class AugmentationPadImage(object):
     def __call__(self, sample):
         """
         pads zeroes of sample image, label and weight
-        :param: AugementationPadImage: self: the object
-        :param: {img, label, weight, scale_factor}: sample: sample image and data
+
+        Args:
+            sample (dict[str, float | int]): sample image and data
         """
 
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
@@ -278,8 +287,10 @@ class AugmentationPadImage(object):
 class AugmentationRandomCrop(object):
     """
     Randomly Crop Image to given size
-    :function: __init__: constructor
-    :function: __call__: crops the Augmentation
+
+    Functions:
+        __init__: constructor
+        __call__: crops the Augmentation
     """
 
     def __init__(self, output_size, crop_type='Random'):
@@ -297,8 +308,12 @@ class AugmentationRandomCrop(object):
     def __call__(self, sample):
         """[help]
         crops the augmentation randomly
-        :param: AugmentationRandomCrop: self: the object
-        :param: {img, label, weight, scale_factor}: sample: sample image with data
+
+        Args:
+            sample (dict[str, float | int]): sample image with data
+
+        Returns:
+            dict[str, float | int]: cropped sample image
         """
         img, label, weight, sf = sample['img'], sample['label'], sample['weight'], sample['scale_factor']
 

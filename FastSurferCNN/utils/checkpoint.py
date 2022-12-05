@@ -34,9 +34,13 @@ VINN_SAG = os.path.join(os.path.dirname(os.path.dirname(__file__)), "checkpoints
 def create_checkpoint_dir(expr_dir, expr_num):
     """
         Create the checkpoint dir
-    :param: path-like: expr_dir: [value]
-    :param: path-like: expr_num: [value]
-    :return: checkpoint path
+
+    Args:
+        expr_dir ():
+        expr_num ():
+
+    Returns:
+        object: checkpoint path
     """
 
     checkpoint_dir = os.path.join(expr_dir, "checkpoints", str(expr_num))
@@ -48,11 +52,14 @@ def get_checkpoint(ckpt_dir, epoch):
     return checkpoint_dir
 
 def get_checkpoint_path(log_dir, resume_expr_num):
-    """
-        gets the path to the checkpoint
-    :param: path-like: log_dir: path to the logs
-    :param: : resume_expr_num: [value]
-    :return: path to prior models
+    """gets the path to the checkpoint
+
+    Args:
+        log_dir (): path to the logs
+        resume_expr_num (): [value]
+
+    Returns:
+        [value]:[value]
     """
 
     if resume_expr_num == "Default":
@@ -66,13 +73,17 @@ def get_checkpoint_path(log_dir, resume_expr_num):
 
 def load_from_checkpoint(checkpoint_path, model, optimizer=None, scheduler=None, fine_tune=False):
     """ [help]
-        Loading the model from the given experiment number
-    :param: path-like: checkpoint_path: path to the checkpoints
-    :param: : model:
-    :param: : optimizer: (Default=None)
-    :param: : scheduler: (Default=None)
-    :param: : fine_tune: (Default=False)
-    :return: epoch number:
+    Loading the model from the given experiment number
+
+    Args:
+        checkpoint_path (): path to the checkpoints
+        model ():
+        optimizer (): (Default=None)
+        scheduler (): (Default=None)
+        fine_tune (): (Default=False)
+
+    Returns:
+        int: epoch number
     """
 
     checkpoint = torch.load(checkpoint_path, map_location='cpu')
@@ -93,16 +104,18 @@ def load_from_checkpoint(checkpoint_path, model, optimizer=None, scheduler=None,
 
 def save_checkpoint(checkpoint_dir, epoch, best_metric, num_gpus, cfg, model,  optimizer, scheduler=None, best=False):
     """ [help]
-        Saving the state of training for resume or fine-tune
-    :param: path-lke: checkpoint_dir: directory to the checkpoints
-    :param: : epoch:
-    :param: : best_metric:
-    :param: int: num_gpus: number of gpus
-    :param: array-like: cfg: configurations
-    :param: : model:
-    :param: : optimizer:
-    :param: : scheduler: (Default=None)
-    :param: : best: (Default=False)
+    Saving the state of training for resume or fine-tune
+
+    Args:
+        checkpoint_dir ():
+        epoch (int):
+        best_metric ():
+        num_gpus (int): number of gpus
+        cfg (yacs.config.CfgNode): configuration Node
+        model ():
+        optimizer ():
+        scheduler (): (Default=None)
+        best (): (Default=False)
     """
 
     save_name = f"Epoch_{epoch:05d}_training_state.pkl"
@@ -136,9 +149,11 @@ def download_checkpoint(download_url, checkpoint_name, checkpoint_path):
     """
         Download a checkpoint file. Raises an HTTPError if the file is not found
         or the server is not reachable.
-    :param: str: download_url: URL of checkpoint hosting site
-    :param: str: checkpoint_name: name of checkpoint
-    :param: str: checkpoint_path: path of the file in which the checkpoint will be saved
+
+    Args:
+        download_url (str): URL of checkpoint hosting site
+        checkpoint_name (str): name of checkpoint
+        checkpoint_path (str): path of the file in which the checkpoint will be saved
     """
 
     try:
@@ -157,8 +172,10 @@ def download_checkpoint(download_url, checkpoint_name, checkpoint_path):
 def check_and_download_ckpts(checkpoint_path, url):
     """
         Check and download a checkpoint file, if it does not exist.
-    :param: str: checkpoint_path: path of the file in which the checkpoint will be saved
-    :param: str: download_url: URL of checkpoint hosting site
+
+    Args:
+        checkpoint_path (): path of the file in which the checkpoint will be saved
+        url (): URL of checkpoint hosting site
     """
 
     # Download checkpoint file from url if it does not exist
@@ -171,11 +188,13 @@ def check_and_download_ckpts(checkpoint_path, url):
 
 def get_checkpoints(axi, cor, sag, url=URL):
     """
-        Check and download checkpoint files if not exist
-    :param: str: url: URL of checkpoint hosting site
-    :param: str: axi: path of the first file in which the checkpoint will be saved
-    :param: str: cor: path of the second file in which the checkpoint will be saved
-    :param: str: sag: path of the third file in which the checkpoint will be saved
+    Check and download checkpoint files if not exist
+
+    Args:
+        axi (): path of the first file in which the checkpoint will be saved
+        cor (): path of the second file in which the checkpoint will be saved
+        sag (): path of the third file in which the checkpoint will be saved
+        url (): URL of checkpoint hosting site
     """
 
     check_and_download_ckpts(axi, url)
