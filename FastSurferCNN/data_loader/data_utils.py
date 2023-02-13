@@ -324,12 +324,16 @@ def deep_sulci_and_wm_strand_mask(volume, structure, iteration=1, ctx_thresh=33)
 def read_classes_from_lut(lut_file):
     """
     Function to read in FreeSurfer-like LUT table
-    :param str lut_file: path and name of FreeSurfer-style LUT file with classes of interest
+
+    Args:
+        lut_file (str):  path and name of FreeSurfer-style LUT file with classes of interest
                          Example entry:
                          ID LabelName  R   G   B   A
                          0   Unknown   0   0   0   0
                          1   Left-Cerebral-Exterior 70  130 180 0
-    :return pd.Dataframe: DataFrame with ids present, name of ids, color for plotting
+
+    Returns:
+        pd.Dataframe: DataFrame with ids present, name of ids, color for plotting
     """
     # Read in file
     separator = {"tsv": "\t", "csv": ",", "txt": " "}
@@ -339,9 +343,13 @@ def read_classes_from_lut(lut_file):
 def map_label2aparc_aseg(mapped_aseg, labels):
     """
     Function to perform look-up table mapping from sequential label space to LUT space
-    :param torch.Tensor mapped_aseg: label space segmentation (aparc.DKTatlas + aseg)
-    :param np.ndarray labels: list of labels defining LUT space
-    :return:
+
+    Args:
+        mapped_aseg (torch.Tensor): label space segmentation (aparc.DKTatlas + aseg)
+        labels (np.ndarray): list of labels defining LUT space
+
+    Returns:
+        ndarray: labels in LUT space
     """
     if isinstance(labels, np.ndarray):
         labels = torch.from_numpy(labels)
@@ -357,9 +365,14 @@ def clean_cortex_labels(aparc):
         Vessel to WM
         5th Ventricle to CSF
         Remaining cortical labels to BKG
-    :param np.array aparc:
-    :return np.array: cleaned aparc
+
+    Args:
+        aparc (np.ndarray): aparc segmentations
+
+    Returns:
+        np.ndarray: cleaned aparc
     """
+
     aparc[aparc == 80] = 77  # Hypointensities Class
     aparc[aparc == 85] = 0  # Optic Chiasma to BKG
     aparc[aparc == 62] = 41  # Right Vessel to Right WM
@@ -376,11 +389,16 @@ def clean_cortex_labels(aparc):
 def fill_unknown_labels_per_hemi(gt, unknown_label, cortex_stop):
     """
     Function to replace label 1000 (lh unknown) and 2000 (rh unknown) with closest class for each voxel.
-    :param np.ndarray gt: ground truth segmentation with class unknown
-    :param int unknown_label: class label for unknown (lh: 1000, rh: 2000)
-    :param int cortex_stop: class label at which cortical labels of this hemi stop (lh: 2000, rh: 3000)
-    :return:
+
+    Args:
+        gt (np.ndarray): ground truth segmentation with class unknown
+        unknown_label (int): class label for unknown (lh: 1000, rh: 2000)
+        cortex_stop (int): class label at which cortical labels of this hemi stop (lh: 2000, rh: 3000)
+
+    Returns:
+        np.ndarray: ground truth segmentation with all classes
     """
+
     # Define shape of image and dilation element
     h, w, d = gt.shape
     struct1 = generate_binary_structure(3, 2)
@@ -414,9 +432,14 @@ def fill_unknown_labels_per_hemi(gt, unknown_label, cortex_stop):
 def fuse_cortex_labels(aparc):
     """
     Fuse cortical parcels on left/right hemisphere (reduce aparc classes)
-    :param np.ndarray aparc: anatomical segmentation with cortical parcels
-    :return: anatomical segmentation with reduced number of cortical parcels
+
+    Args:
+        aparc (np.ndarray): anatomical segmentation with cortical parcels
+
+    Returns:
+        np.ndarray: anatomical segmentation with reduced number of cortical parcels
     """
+
     aparc_temp = aparc.copy()
 
     # Map undetermined classes
@@ -450,13 +473,17 @@ def fuse_cortex_labels(aparc):
 
     return aparc
 
-
 def split_cortex_labels(aparc):
     """
     Splot cortex labels to completely de-lateralize structures
-    :param np.ndarray aparc: anatomical segmentation and parcellation from network
-    :return np.ndarray: re-lateralized aparc
+
+    Args:
+        aparc (np.ndarray): anatomical segmentation and parcellation from network
+
+    Returns:
+        np.ndarray: re-lateralized aparc
     """
+
     # Post processing - Splitting classes
     # Quick Fix for 2026 vs 1026; 2029 vs. 1029; 2025 vs. 1025
     rh_wm = get_largest_cc(aparc == 41)
@@ -505,14 +532,19 @@ def split_cortex_labels(aparc):
 def unify_lateralized_labels(lut, combi=("Left-", "Right-")):
     """
     Function to generate lookup dictionary of left-right labels
-    :param str or pd.DataFrame lut: either lut-file string to load or pandas dataframe
+
+    Args:
+        lut (str or pd.DataFrame):  either lut-file string to load or pandas dataframe
                                     Example entry:
                                     ID LabelName  R   G   B   A
                                     0   Unknown   0   0   0   0
                                     1   Left-Cerebral-Exterior 70  130 180 0
-    :param list(str) combi: Prefix or labelnames to combine. Default: Left- and Right-
-    :return dict: dictionary mapping between left and right hemispheres
+        combi (list(str)): Prefix or labelnames to combine. Default: Left- and Right-
+
+    Returns:
+        dict: dictionary mapping between left and right hemispheres
     """
+
     if isinstance(lut, str):
         lut = read_classes_from_lut(lut)
     left = lut[["ID", "LabelName"]][lut["LabelName"].str.startswith(combi[0])]
@@ -525,18 +557,23 @@ def unify_lateralized_labels(lut, combi=("Left-", "Right-")):
 
 def get_labels_from_lut(lut, label_extract=("Left-", "ctx-rh")):
     """
-    Function to extract
-    :param str of pd.DataFrame lut: FreeSurfer like LookUp Table (either path to it
+    Function to extract labels from the lookup tables
+
+    Args:
+        lut (str of pd.DataFrame): FreeSurfer like LookUp Table (either path to it
                                     or already loaded as pandas DataFrame.
                                     Example entry:
                                     ID LabelName  R   G   B   A
                                     0   Unknown   0   0   0   0
                                     1   Left-Cerebral-Exterior 70  130 180 0
-    :param tuple(str) label_extract: suffix of label names to mask for sagittal labels
+        label_extract (tuple(str)): suffix of label names to mask for sagittal labels
                                      Default: "Left-" and "ctx-rh"
-    :return np.ndarray: full label list
-    :return np.ndarray: sagittal label list
+
+    Returns:
+        np.ndarray: full label list
+        np.ndarray: sagittal label list
     """
+
     if isinstance(lut, str):
         lut = read_classes_from_lut(lut)
     mask = lut["LabelName"].str.startswith(label_extract)
@@ -546,16 +583,22 @@ def get_labels_from_lut(lut, label_extract=("Left-", "ctx-rh")):
 def map_aparc_aseg2label(aseg, labels, labels_sag, sagittal_lut_dict, aseg_nocc=None, processing="aparc"):
     """
     Function to perform look-up table mapping of aparc.DKTatlas+aseg.mgz data to label space
-    :param np.ndarray aseg: ground truth aparc+aseg
-    :param np.ndarray labels: labels to use (extracted from LUT with get_labels_from_lut)
-    :param np.ndarray labels_sag: sagittal labels to use (extracted from LUT with
+
+    Args:
+        aseg (np.ndarray): ground truth aparc+aseg
+        labels (np.ndarray): labels to use (extracted from LUT with get_labels_from_lut)
+        labels_sag (np.ndarray): sagittal labels to use (extracted from LUT with
                                   get_labels_from_lut)
-    :param dict(int) sagittal_lut_dict: left-right label mapping (can be extracted with
+        sagittal_lut_dict (dict(int)): left-right label mapping (can be extracted with
                                         unify_lateralized_labels from LUT)
-    :param str processing: should be set to "aparc" or "aseg" for additional mappings (hard-coded)
-    :param None/np.ndarray aseg_nocc: ground truth aseg without corpus callosum segmentation
-    :return:
+        aseg_nocc (None/np.ndarray): ground truth aseg without corpus callosum segmentation
+        processing (str): should be set to "aparc" or "aseg" for additional mappings (hard-coded)
+
+    Returns:
+        np.ndsarray: mapped aseg for coronal and axial
+        np.ndsarray: mapped aseg for sagital
     """
+
     # If corpus callosum is not removed yet, do it now
     if aseg_nocc is not None:
         cc_mask = (aseg >= 251) & (aseg <= 255)
@@ -606,7 +649,7 @@ def map_aparc_aseg2label(aseg, labels, labels_sag, sagittal_lut_dict, aseg_nocc=
     for idx, value in enumerate(labels_sag):
         lut_aseg[value] = idx
 
-    # Remap Label Classes - Perform LUT Mapping - Coronal, Axial
+    # Remap Label Classes - Perform LUT Mapping - Sagital
     mapped_aseg_sag = lut_aseg.ravel()[aseg.ravel()]
     mapped_aseg_sag = mapped_aseg_sag.reshape((h, w, d))
 
@@ -616,9 +659,14 @@ def map_aparc_aseg2label(aseg, labels, labels_sag, sagittal_lut_dict, aseg_nocc=
 def sagittal_coronal_remap_lookup(x):
     """
     Dictionary mapping to convert left labels to corresponding right labels for aseg
-    :param int x: label to look up
-    :return:
+
+    Args:
+        x (int): label to look up
+
+    Returns:
+        int: mapped label
     """
+
     return {
         2: 41,
         3: 42,
@@ -639,6 +687,18 @@ def sagittal_coronal_remap_lookup(x):
 
 
 def infer_mapping_from_lut(num_classes_full, lut):
+    """ [help]
+
+
+    Args:
+        num_classes_full (int): number of classes
+        lut (str of pd.DataFrame): look-up table listing class labels
+
+    Returns:
+        np.ndarray: list of indexes for
+
+    """
+
     labels, labels_sag = unify_lateralized_labels(lut)
     idx_list = np.ndarray(shape=(num_classes_full,), dtype=np.int16)
     for idx in range(len(labels)):
@@ -658,11 +718,16 @@ def map_prediction_sagittal2full(prediction_sag, num_classes=51, lut=None):
     """
     Function to remap the prediction on the sagittal network to full label space used by coronal and axial networks
     (full aparc.DKTatlas+aseg.mgz)
-    :param prediction_sag: sagittal prediction (labels)
-    :param int num_classes: number of SAGGITAL classes (96 for full classes, 51 for hemi split, 21 for aseg)
-    :param str/None lut: look-up table listing class labels
-    :return: Remapped prediction
+
+    Args:
+        prediction_sag (np.ndarray): sagittal prediction (labels)
+        num_classes (int): number of SAGGITAL classes (96 for full classes, 51 for hemi split, 21 for aseg)
+        lut (str/None): look-up table listing class labels
+
+    Returns:
+        np.ndarray: Remapped prediction
     """
+
     if num_classes == 96:
         idx_list = np.asarray([0, 5, 6, 7, 8, 9, 10, 11, 12, 13, 1, 2, 3, 14, 15, 4, 16,
                                17, 18, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
@@ -693,10 +758,17 @@ def map_prediction_sagittal2full(prediction_sag, num_classes=51, lut=None):
 
 # Clean up and class separation
 def bbox_3d(img):
-    """
+    """[help]
     Function to extract the three-dimensional bounding box coordinates.
-    :param np.ndarray img: mri image
-    :return:
+
+    Args:
+        img (np.ndarray): mri image
+
+    Returns:
+        ndarray:
+        ndarray:
+        ndarray:
+        ndarray:
     """
 
     r = np.any(img, axis=(1, 2))
@@ -712,10 +784,15 @@ def bbox_3d(img):
 
 def get_largest_cc(segmentation):
     """
-    Function to find largest connected component of segmentation.
-    :param np.ndarray segmentation: segmentation
-    :return:
+    Function to find the largest connected component of segmentation.
+
+    Args:
+        segmentation (np.ndarray): segmentation
+
+    Returns:
+        np.ndarray: largest connected component of segmentation
     """
+
     labels = label(segmentation, connectivity=3, background=0)
 
     bincount = np.bincount(labels.flat)

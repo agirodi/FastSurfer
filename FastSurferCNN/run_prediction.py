@@ -54,7 +54,7 @@ def set_up_cfgs(cfg: str, args: argparse.Namespace):
         args (argparse.Namespace): {out_dir, batch_size} arguments
 
     Returns:
-        (str) CfgNode of configurations
+        (str) Node of configurations
     """
 
     cfg = load_config(cfg)
@@ -69,12 +69,13 @@ def set_up_cfgs(cfg: str, args: argparse.Namespace):
 
 def args2cfg(args: argparse.Namespace):
     """
-    converges args to configurations
-    :param: args: argparse.Namespace: arguments
-    :return: {cfg_fin, cfg_cor, cfg_sag, cfg_ax}
+    converges args to a configuration Node
 
     Args:
-        args (argparse.Namespace):
+        args (argparse.Namespace):arguments
+
+    Returns:
+        {cfg_fin, cfg_cor, cfg_sag, cfg_ax}:  [help]
     """
 
     cfg_cor = set_up_cfgs(args.cfg_cor, args) if args.cfg_cor is not None else None
@@ -85,6 +86,16 @@ def args2cfg(args: argparse.Namespace):
 
 
 def removesuffix(string, suffix):
+    """
+    method to remove the provided suffix from the string
+
+    Args:
+        string (str): string to be cut
+        suffix (str): suffix to be removed
+
+    Returns:
+        object:
+    """
     import sys
     if sys.version_info.minor >= 9:
         # removesuffix is a Python3.9 feature
@@ -112,6 +123,16 @@ class RunModelOnData:
         save_img(): saves image as file
         set_up_model_params(): setter
         get_num_classes(): getter
+
+    Attributes:
+        pred_name(str):
+        conf_name(str):
+        orig_name(str):
+        vox_size(Union[float, Literal["min"]]):
+        current_plane(str):
+        models(Dict[str, Inference]):
+        view_ops(Dict[str, Dict[str, Any]]):
+        conform_to_1mm_threshold(Optional[float]): threshold until which the image will be conformed to 1mm res
     """
 
     pred_name: str
@@ -128,8 +149,20 @@ class RunModelOnData:
         constructor
 
         Args:
-            args (argparse.Namespace): {pred_name, conf_name, orig_name, strip, out_dir, run_viewagg_on, lut, gn,
-                ckpt_cor, ckpt_sag, ckpt_ax, device, hires} Series of arguments
+            args (argparse.Namespace):
+                pred_name():
+                conf_name():
+                orig_name():
+                strip():
+                out_dir():
+                run_viewagg_on():
+                lut():
+                gn():
+                ckpt_cor():
+                ckpt_sag():
+                ckpt_ax():
+                device():
+                hires():
         """
 
         self.pred_name = args.pred_name
@@ -265,7 +298,7 @@ class RunModelOnData:
 
         Args:
             orig_f (str): original image filename
-            orig_data (): original image data
+            orig_data (np.ndarray): original image data
             zoom (Union[np.ndarray, tuple]): original zoom
 
         Returns:

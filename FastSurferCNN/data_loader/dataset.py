@@ -71,9 +71,14 @@ class MultiScaleOrigDataThickSlices(Dataset):
 
         ToDO: This needs to be updated based on the plane we are looking at in case we
         are dealing with non-isotropic images as inputs.
-        :param img_zoom:
-        :return np.ndarray(float32): scale factor along x and y dimension
+
+        Args:
+            zoom (int):
+
+        Returns:
+            np.ndarray(float32): scale factor along x and y dimension
         """
+
         scale = self.base_res / np.asarray(self.zoom)
 
         return scale
@@ -284,8 +289,12 @@ class MultiScaleDatasetVal(Dataset):
 
         ToDO: This needs to be updated based on the plane we are looking at in case we
         are dealing with non-isotropic images as inputs.
-        :param img_zoom:
-        :return np.ndarray(float32): scale factor along x and y dimension
+
+        Args:
+            img_zoom (): zooming factor [help   ]
+
+        Returns:
+            np.ndarray(float32): scale factor along x and y dimension
         """
         scale = self.base_res / img_zoom
         return scale

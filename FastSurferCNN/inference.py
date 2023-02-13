@@ -33,17 +33,49 @@ logger = logging.getLogger(__name__)
 
 
 class Inference:
+    """
+    Model evaluation class to run inference using FastSurferCNN
+
+    Functions:
+        __init__(cfg, device, ckpt): Constructor
+        setup_model(cfg, device): Set up the initial model
+        set_cfg(cfg): Set configuration node
+        to(device): Moves and/or casts the parameters and buffers.
+        load_checkpoint(ckpt): function to load the checkpoint
+        eval(init_pred, val_loader, *, out_scale, out): evaluate predictions
+        run(init_pred, img_filename, orig_data, orig_zoom, out, out_res, batch_size): run the loaded model
+
+    Attributes:
+        permute_order (Dict[str, Tuple[int, int, int, int]]): permutation order for axial, coronal, and sagittal
+        device (Optional[torch.device]): device specification for distributed computation usage.
+        default_device (torch.device): default device specification for distributed computation usage.
+        cfg (yacs.config.CfgNode): configuration Node
+        model_parallel (bool): option for parallel run
+        model (torch.nn.Module): neural network model
+        model_name (str): name of the model
+        alpha (dict[str, float]): [help]
+        post_prediction_mapping_hook (): [help]
+
+    """
 
     permute_order: Dict[str, Tuple[int, int, int, int]]
     device: Optional[torch.device]
     default_device: torch.device
 
-    def __init__(self, cfg, device: torch.device, ckpt: str = ""):
+    def __init__(self,  cfg, device: torch.device, ckpt: str = ""):
+        """ Constructor
+
+        Args:
+            cfg (yacs.config.CfgNode): configuration Node
+            device (torch.device): device specification for distributed computation usage.
+            ckpt (str): string or os.PathLike object containing the name to the checkpoint file
+        """
+
         # Set random seed from configs.
         np.random.seed(cfg.RNG_SEED)
         torch.manual_seed(cfg.RNG_SEED)
         self.cfg = cfg
-        
+
         # Switch on denormal flushing for faster CPU processing
         # seems to have less of an effect on VINN than old CNN
         torch.set_flush_denormal(True)
@@ -63,7 +95,7 @@ class Inference:
 
         self.alpha = {"sagittal": 0.2}
         self.permute_order = {"axial": (3, 0, 2, 1), "coronal": (2, 3, 0, 1), "sagittal": (0, 3, 2, 1)}
-        self.post_predition_mapping_hook = {"sagittal": map_prediction_sagittal2full}
+        self.post_prediction_mapping_hook = {"sagittal": map_prediction_sagittal2full}
 
         # Initial checkpoint loading
         if ckpt:
@@ -71,6 +103,14 @@ class Inference:
             self.load_checkpoint(ckpt)
 
     def setup_model(self, cfg=None, device: torch.device = None):
+        """
+        function to set up the model
+
+        Args:
+            cfg (yacs.config.CfgNode): configuration Node
+            device (torch.device): device specification for distributed computation usage.
+        """
+
         if cfg is not None:
             self.cfg = cfg
         if device is None:
@@ -85,6 +125,13 @@ class Inference:
         self.cfg = cfg
 
     def to(self, device: Optional[torch.device] = None):
+        """
+        Moves and/or casts the parameters and buffers.
+
+        Args:
+            device (Optional[torch.device]): the desired device of the parameters and buffers in this module
+        """
+
         if self.model_parallel:
             raise RuntimeError("Moving the model to other devices is not supported for multi-device models.")
         _device = self.default_device if device is None else device
@@ -92,6 +139,13 @@ class Inference:
         self.model.to(device=_device)
 
     def load_checkpoint(self, ckpt):
+        """
+        function to load the checkpoint and set device and model
+
+        Args:
+            ckpt (str): string or os.PathLike object containing the name to the checkpoint file
+        """
+
         logger.info("Loading checkpoint {}".format(ckpt))
 
         self.model = self._model_not_init
@@ -147,7 +201,19 @@ class Inference:
 
     @torch.no_grad()
     def eval(self, init_pred: torch.Tensor, val_loader: DataLoader, *, out_scale=None, out: Optional[torch.Tensor] = None):
-        """Perform prediction and inplace-aggregate views into pred_prob. Return pred_prob."""
+        """
+        Perform prediction and inplace-aggregate views into pred_prob.
+
+        Args:
+            init_pred (torch.Tensor): initial prediction
+            val_loader (DataLoader): value loader
+            out_scale (): [help]
+            out (Optional[torch.Tensor]): previous prediction tensor
+
+        Returns:
+            np.ndarray: prediction probability tensor
+        """
+
         self.model.eval()
         # we should check here, whether the DataLoader is a Random or a SequentialSampler, but we cannot easily.
         if not isinstance(val_loader.sampler, torch.utils.data.SequentialSampler):
@@ -178,7 +244,7 @@ class Inference:
                     end_index = start_index + batch_size
 
                     # check if we need a special mapping (e.g. as for sagittal)
-                    pred = self.post_predition_mapping_hook.get(plane, lambda x: x)(pred)
+                    pred = self.post_prediction_mapping_hook.get(plane, lambda x: x)(pred)
 
                     # permute the prediction into the out slice order
                     pred = pred.permute(*self.permute_order[plane]).to(out.device)  # the to-operation is implicit
@@ -202,7 +268,22 @@ class Inference:
     @torch.no_grad()
     def run(self, init_pred: torch.Tensor, img_filename, orig_data, orig_zoom,
             out: Optional[torch.Tensor] = None, out_res=None, batch_size: int = None):
-        """Run the loaded model on the data (T1) from orig_data and filename img_filename with scale factors orig_zoom."""
+        """ [help]
+        Run the loaded model on the data (T1) from orig_data and filename img_filename with scale factors orig_zoom.
+
+        Args:
+            init_pred (torch.Tensor): initial prediction
+            img_filename (str): original image filename
+            orig_data (np.ndarray): original image data
+            orig_zoom (np.ndarray): original zoom
+            out (Optional[torch.Tensor]): updated output tensor (Default = None)
+            out_res (): output resolution
+            batch_size (int): batch size (Default = None)
+
+        Returns:
+            torch.Tensor: prediction probability tensor
+        """
+
         # Set up DataLoader
         test_dataset = MultiScaleOrigDataThickSlices(img_filename, orig_data, orig_zoom, self.cfg,
                                                      transforms=transforms.Compose([ToTensorTest()]))

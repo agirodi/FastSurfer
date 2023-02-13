@@ -77,16 +77,17 @@ class _ZoomNd(nn.Module):
         the target shape must be rounded to the nearest integer
 
         Args:
-            input_tensor: The tensor of shape (N, C, D_1, ...D_{dim}), where N is the batch size, C is the number of channels
+            input_tensor(Tensor): The tensor of shape (N, C, D_1, ...D_{dim}), where N is the batch size, C is the number of channels
                 and D_1, ..., D_{dim} are the dimensions of the image.
-            scale_factors: The factor, by which to zoom the image. Can be a torch.Tensor or an array_like (numpy.ndarray
+            scale_factors (T_ScaleAll): The factor, by which to zoom the image. Can be a torch.Tensor or an array_like (numpy.ndarray
                 or a (cascaded) sequence of floats or ints) or a float. If it is a float, all axis and all images of the
-                batch are treated the same (zoomed by the float). Else, it will be interpreted as a multi-dimensional
+                batch are treated the same (zoomed by the float). Else, it will be interpreted as a multidimensional
                 image: The first dimension corresponds to and must be equal to the batch size of the image. The second
                 dimension is optional and may contain different values for the _scale_limits factor per axis. In consequence,
                 this dimension can have 1 or {dim} values.
+            rescale (bool): (default = False)
         Returns:
-            The zoomed tensor and the zoom factors that were actually used in the calculation for correct rescaling.
+            _T.Tuple[Tensor, _T.List[T_Scale]]: The zoomed tensor and the zoom factors that were actually used in the calculation for correct rescaling.
 
         Notes:
             If this Module is used to zoom images of different voxelsizes to the same voxelsize, then `scale_factor`
