@@ -24,15 +24,24 @@ from torch.nn import functional as F
 class DiceLoss(_Loss):
     """
     Dice Loss
+
+    Functions:
+        forward: Calulates the DiceLoss
+
+
     """
 
     def forward(self, output, target, weights=None, ignore_index=None):
-        """
-        :param output: N x C x H x W Variable
-        :param target: N x C x W LongTensor with starting class at 0
-        :param weights: C FloatTensor with class wise weights
-        :param int ignore_index: ignore label with index x in the loss calculation
-        :return:
+        """ Calulates the DiceLoss
+
+        Parameter:
+            output (Tensor): N x C x H x W Variable
+            target (Tensor): N x C x W LongTensor with starting class at 0
+            weights (Tensor): C FloatTensor with class wise weights (Default: None)
+            ignore_index (int): ignore label with index x in the loss calculation (Default: None)
+
+        Returns:
+            float: Calculated Diceloss
         """
         eps = 0.001
 
@@ -68,9 +77,23 @@ class DiceLoss(_Loss):
 class CrossEntropy2D(nn.Module):
     """
     2D Cross-entropy loss implemented as negative log likelihood
+
+    Attributes:
+        nll_loss (float): calculated cross-entropy loss
+
+    Fuctions:
+        forward: returns calculated cross entropy
     """
 
     def __init__(self, weight=None, reduction='none'):
+        """
+        Initialization of CrossEntropy2D
+
+        Args:
+            weight (Tensor): a manual rescaling weight given to each class. If given, has to be a Tensor of size `C` (Default: None)
+            reduction (string): Specifies the reduction to apply to the output, as in nn.CrossEntropyLoss (Default: None)
+        """
+
         super(CrossEntropy2D, self).__init__()
         self.nll_loss = nn.CrossEntropyLoss(weight=weight, reduction=reduction)
         print(f"Initialized {self.__class__.__name__} with weight: {weight} and reduction: {reduction}")
@@ -80,15 +103,25 @@ class CrossEntropy2D(nn.Module):
 
 
 class CombinedLoss(nn.Module):
-    """
+    """ [help]
     For CrossEntropy the input has to be a long tensor
-    Args:
-        -- inputx N x C x H x W
-        -- target - N x H x W - int type
-        -- weight - N x H x W - float
+
+    Attributes:
+
+        cross_entropy_loss (Tensor): Results of cross entropy loss
+        dice_loss (Tensor): Results of dice loss
+        weight_dice (float): Weight for dice loss
+        weight_ce (float): Weight for float
     """
 
     def __init__(self, weight_dice=1, weight_ce=1):
+        """ Initialization of CobinedLoss
+
+        Args:
+            weight_dice (float): Weight for dice loss (Default: 1)
+            weight_ce (float):  Weight for cross entropy loss (Default :1)
+        """
+
         super(CombinedLoss, self).__init__()
         self.cross_entropy_loss = CrossEntropy2D()
         self.dice_loss = DiceLoss()
@@ -96,6 +129,17 @@ class CombinedLoss(nn.Module):
         self.weight_ce = weight_ce
 
     def forward(self, inputx, target, weight):
+        """ [help]
+
+        Args:
+            inputx (Tensor): A Tensor of shape N x C x H x W containing  the input x values
+            target (Tensor): A Tensor of shape N x H x W of integers containing the target
+            weight (Tensor): A Tensor of shape N x H x W of floats containg the weights
+
+        Returns:
+           tuple[Tensor, Tensor, Tensor]: total loss, dice loss and cross entropy value
+        """
+
         # Typecast to long tensor --> labels are bytes initially (uint8),
         # index operations requiere LongTensor in pytorch
         target = target.type(torch.LongTensor)
@@ -112,6 +156,19 @@ class CombinedLoss(nn.Module):
 
 
 def get_loss_func(cfg):
+    """ Gives a default object of the loss function
+
+    Args:
+        cfg (yacs.config.CfgNode): configuration node, containing searched loss function.
+            The model loss function can either be 'combined', 'ce' or 'dice'
+
+    Returns:
+        object: an object of the class corresponding to the loss function
+
+    Raises:
+        NotImplementedError: Requested loss function is not implemented
+    """
+
     if cfg.MODEL.LOSS_FUNC == 'combined':
         return CombinedLoss()
     elif cfg.MODEL.LOSS_FUNC == 'ce':

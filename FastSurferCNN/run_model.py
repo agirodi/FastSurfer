@@ -30,7 +30,7 @@ def setup_options():
     Parses arguments from the STDIN, including the flags: --cfg, --aug, --opt, opts,
 
     Returns:
-        (argparse.Namespace) List of the given arguments
+        argparse.Namespace: List of the given arguments
     """
 
     parser = argparse.ArgumentParser(description='Segmentation')

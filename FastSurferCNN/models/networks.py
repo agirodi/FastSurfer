@@ -32,8 +32,24 @@ class FastSurferCNNBase(nn.Module):
     * Concatenationes are replaced with Maxout (competitive dense blocks)
     * Global skip connections are fused by Maxout (global competition)
     * Loss Function (weighted Cross-Entropy and dice loss)
+
+    Attributes:
+        encode[1-4] (CompetitiveEncoderBlock): The Competitive Encoder Blocks
+        decode[1-4] (CompetitiveDecoderBlock): The Competitive Decoder Blocks
+        bottleneck (CompetitiveDenseBlock): The Bottleneck Block
+
+    Functions:
+        forward: Computational graph
+
     """
     def __init__(self, params, padded_size=256):
+        """ Initialization of FastSurferCNNBase
+
+        Args:
+            params (dict):  dictionary of configurations
+            padded_size (int): size of image when padded
+        """
+
         super(FastSurferCNNBase, self).__init__()
 
         # Parameters for the Descending Arm
@@ -63,9 +79,16 @@ class FastSurferCNNBase(nn.Module):
     def forward(self, x, scale_factor=None, scale_factor_out=None):
         """
         Computational graph
-        :param tensor x: input image
-        :return tensor: prediction logits
+
+        Args:
+            x (Tensor): input image
+            scale_factor (): (Default: None)
+            scale_factor_out (): (Default: None)
+
+        Returns:
+            tensor: prediction logits
         """
+
         encoder_output1, skip_encoder_1, indices_1 = self.encode1.forward(x)
         encoder_output2, skip_encoder_2, indices_2 = self.encode2.forward(encoder_output1)
         encoder_output3, skip_encoder_3, indices_3 = self.encode3.forward(encoder_output2)
@@ -206,6 +229,15 @@ _MODELS = {
 
 
 def build_model(cfg):
+    """
+
+    Args:
+        cfg (yacs.config.CfgNode): Node of configs to be used
+
+    Returns:
+        FastSurferCNNBase: Object of the initialized model
+
+    """
     assert (cfg.MODEL.MODEL_NAME in _MODELS.keys()),\
         f"Model {cfg.MODEL.MODEL_NAME} not supported"
     params = {k.lower(): v for k, v in dict(cfg.MODEL).items()}

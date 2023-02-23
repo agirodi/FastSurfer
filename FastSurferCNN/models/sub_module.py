@@ -22,6 +22,12 @@ import torch.nn as nn
 # Building Blocks
 class InputDenseBlock(nn.Module):
     def __init__(self, params):
+        """
+
+        Args:
+            params ():
+        """
+
         super(InputDenseBlock, self).__init__()
         # Padding to get output tensor of same dimensions
         padding_h = int((params['kernel_h'] - 1) / 2)

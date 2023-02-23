@@ -291,7 +291,7 @@ class MultiScaleDatasetVal(Dataset):
         are dealing with non-isotropic images as inputs.
 
         Args:
-            img_zoom (): zooming factor [help   ]
+            img_zoom (): zooming factor [help]
 
         Returns:
             np.ndarray(float32): scale factor along x and y dimension
