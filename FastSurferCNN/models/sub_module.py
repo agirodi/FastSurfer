@@ -21,11 +21,22 @@ import torch.nn as nn
 
 # Building Blocks
 class InputDenseBlock(nn.Module):
+    """
+    [HELP]
+
+    Attributes:
+        conv[0-3] (torch.nn.Conv2d): Convolution layers
+        bn0 (torch.nn.BatchNorm2d): Batch Normalization
+        gn[1-4] (torch.nn.BatchNorm2d): Batch Normalizations
+        prelu (torch.nn.PReLU): Learnable ReLU Parameter
+    """
+
     def __init__(self, params):
         """
+        Initialization of InputDenseBlock
 
         Args:
-            params ():
+            params (dict):  dictionary of configurations
         """
 
         super(InputDenseBlock, self).__init__()
@@ -68,6 +79,16 @@ class InputDenseBlock(nn.Module):
         self.prelu = nn.PReLU()  # Learnable ReLU Parameter
 
     def forward(self, x):
+        """[HELP]
+        Computational graph
+
+        Args:
+            x (Tensor): input image [N, C, H, W]
+
+        Returns:
+            tensor: prediction logits
+        """
+
         # Input batch normalization
         x0_bn = self.bn0(x)
 
