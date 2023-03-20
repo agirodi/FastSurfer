@@ -28,8 +28,17 @@ import numpy as np
 
 
 def rmat2angles(R):
-    # Extracts rotation angles (alpha,beta,gamma) in FreeSurfer format (mris_register)
-    # from a rotation matrix
+    """
+    Extracts rotation angles (alpha,beta,gamma) in FreeSurfer format (mris_register)
+    from a rotation matrix
+
+    Args:
+        R: rotation matrix
+
+    Returns:
+        (alpha, beta, gamma)
+    """
+
     alpha = np.degrees(-np.arctan2(R[1,0],R[0,0]))
     beta  = np.degrees(np.arcsin(R[2,0]))
     gamma = np.degrees(np.arctan2(R[2,1],R[2,2]))
@@ -37,7 +46,17 @@ def rmat2angles(R):
 
 
 def angles2rmat(alpha, beta, gamma):
-    # Converts FreeSurfer angles (alpha,beta,gamma) in degrees to a rotation matrix
+    """
+    Converts FreeSurfer angles (alpha,beta,gamma) in degrees to a rotation matrix
+
+    Args:
+        alpha, beta, gamma:
+            FreeSurfer angles
+
+    Returns:
+        R: rotation angles
+    """
+
     sa = np.sin(np.radians(alpha))
     sb = np.sin(np.radians(beta))
     sg = np.sin(np.radians(gamma))
@@ -51,6 +70,19 @@ def angles2rmat(alpha, beta, gamma):
 
 
 def find_rotation(p_mov, p_dst):
+    """ [help]
+
+    Args:
+        p_mov: [help]
+        p_dst: [help]
+
+    Returns:
+        R: Rotation matrix
+
+    Raises:
+        ValueError: Shape of points should be identical
+    """
+
     if p_mov.shape != p_dst.shape:
         raise ValueError("Shape of points should be identical, but mov = {}, dst = {} expecting Nx3".format(p_mov.shape,p_dst.shape))    
     # average SSD
@@ -76,6 +108,15 @@ def find_rotation(p_mov, p_dst):
 
 
 def find_rigid(p_mov, p_dst):
+    """ [help]
+
+    Args:
+        p_mov: [help]
+        p_dst: [help]
+
+    Returns:
+        T: Homogeneous transformation matrix
+    """
     if p_mov.shape != p_dst.shape:
         raise ValueError("Shape of points should be identical, but mov = {}, dst = {} expecting Nx3".format(p_mov.shape,p_dst.shape))        # average SSD
     # translate points to be centered around origin
@@ -101,8 +142,21 @@ def find_rigid(p_mov, p_dst):
     return T
 
 def find_affine(p_mov, p_dst):
-    # find affine by least squares solution of overdetermined system
-    # (assuming we have more than 4 point pairs)
+    """
+    find affine by least squares solution of overdetermined system
+    (assuming we have more than 4 point pairs)
+
+    Args:
+        p_mov: [help]
+        p_dst: [help]
+
+    Returns:
+        T: Affine transformation matrix
+
+    Raises:
+        ValueError: Shape of points should be identical
+    """
+
     from scipy.linalg import pinv
     if p_mov.shape != p_dst.shape:
         raise ValueError("Shape of points should be identical, but mov = {}, dst = {} expecting Nx3".format(p_mov.shape,p_dst.shape))        # average SSD
