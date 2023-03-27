@@ -86,7 +86,22 @@ h_trgsid     = 'optional, when storing mapped labels: target subject id, also wr
 def options_parse():
     """
     Command line option parser
+
+    Returns:
+        options (Namespace): object holding options
+            hemi: "lh" or "rh" for reading labels
+            colortab: colortab with label ids, names and colors
+            labeldir: dir where to find the label files (when reading)
+            white: path/filename of white surface for the annotation
+            cortex: optional path to hemi.cortex for optional masking of annotation to only cortex
+            append: optional, e.g. ".thresh" can be appended to label names (I/O) for exvivo FS labels
+            outannot: path to output annotation file
+            srcsphere: optional, when mapping: path to src sphere.reg
+            trgsphere: optional, when mapping: path to trg sphere.reg
+            trgdir: optional: directory where to write mapped label files
+            trgsid: optional, when storing mapped labels: target subject id, also written into label file
     """
+
     parser = optparse.OptionParser(version='$Id:create_annotation.py,v 1.0 2022/08/24 21:22:08 mreuter Exp $', usage=HELPTEXT)
     parser.add_option('--hemi',      dest='hemi',      help=h_hemi)
     parser.add_option('--colortab',  dest='colortab',  help=h_colortab)
@@ -117,13 +132,32 @@ def options_parse():
 def map_multiple_labels(hemi, src_dir, src_labels, src_sphere_name, 
                         trg_sphere_name, trg_white_name, trg_sid, 
                         out_dir = None, stop_missing = True):
-# function to map a list of labels (just names without hemisphere or path, which are 
-#  passed via hemi, src_dir, out_dir) from one surface (e.g. fsavaerage sphere.reg)
-#  to another. 
-#  stop_missing determines whether to stop on a missing src label file, or continue
-#  with a warning. 
-#  All mapped labels and their values are returned
-#  Also mapped label files are written to the out_dir if specified
+    """
+    function to map a list of labels (just names without hemisphere or path, which are
+    passed via hemi, src_dir, out_dir) from one surface (e.g. fsavaerage sphere.reg)
+    to another.
+
+
+    Args:
+        hemi (str): "lh" or "rh" for reading labels
+        src_dir (str): director of the source file
+        src_labels (ArrayLike): List of labels
+        src_sphere_name: filename of source sphere
+        trg_sphere_name: filename of target sphere
+        trg_white_name: filename of target white
+        trg_sid: target subject id
+        out_dir: directory for output, defaults to None
+        stop_missing (bool): determines whether to stop on a missing src label file, or continue
+            with a warning. Defaults to True
+
+    Returns:
+        all_labels: mapped labels
+        all_values: values of mapped labels
+
+    Raises:
+        ValueError: Label file missing
+    """
+
     # get reverse mapping (trg->src) for sampling
     rev_mapping,_,_ = getSurfCorrespondence(trg_sphere_name, src_sphere_name)
     all_labels = []
@@ -156,7 +190,19 @@ def map_multiple_labels(hemi, src_dir, src_labels, src_sphere_name,
 
 
 def read_multiple_labels(hemi, input_dir, label_names):
-# read multiple label files from input_dir
+    """
+    read multiple label files from input_dir
+
+    Args:
+        hemi: "lh" or "rh" for reading labels
+        input_dir (str): director of the source
+        label_names (ArrayLike): List of labels
+
+    Returns:
+        all_labels: read labels
+        all_values: values of read labels
+    """
+
     all_labels = []
     all_values = []
     for l_name in label_names:
@@ -174,11 +220,23 @@ def read_multiple_labels(hemi, input_dir, label_names):
 
 
 def build_annot(all_labels, all_values, col_ids, trg_white, cortex_label_name=None):
-# function to create an annotation from multiple labels. Here we also consider the
-# label values and overwrite existing labels if values of current are larger (or equal,
-# so the order of the labels matters). 
-# annot_ids and values are returned, no output is written.
-#
+    """
+    function to create an annotation from multiple labels. Here we also consider the
+    label values and overwrite existing labels if values of current are larger (or equal,
+    so the order of the labels matters). No output is written.
+
+    Args:
+        all_labels (ArrayLike): List of all Labels
+        all_values (ArrayLike): List of all values
+        col_ids (ArrayLike): List of col ids
+        trg_white (str): target file of white
+        cortex_label_name: Defaults to None
+
+    Returns:
+        annot_ids: Ids of build Annotations
+        annot_vals: Values of build Annotations
+    """
+
     # create annot from a bunch of labels (and values)
     if isinstance(trg_white, str):
         trg_white= fs.read_geometry(trg_white, read_metadata=False)[0]
@@ -212,6 +270,18 @@ def build_annot(all_labels, all_values, col_ids, trg_white, cortex_label_name=No
 
 
 def read_colortable(colortab_name):
+    """
+    reads the colortable of given name
+
+    Args:
+        colortab_name (str): Name of the colortable
+
+    Returns:
+        ids (ArrayLike): List of ids
+        names (ArrayLike): List of names
+        colors (ArrayLike): List of colors corresponding to ids and names
+    """
+
     colortab = np.genfromtxt(colortab_name, dtype="i8",usecols=(0,2,3,4,5))
     ids = colortab[:,0]
     colors = colortab[:,1:]
@@ -221,11 +291,20 @@ def read_colortable(colortab_name):
 
 
 def write_annot(annot_ids, label_names, colortab_name, out_annot, append=""):
-# This function combines the colortable with the annotations ids to 
-# write an annotation file (which contains colortable information)
-# Care needs to be taken that the colortable file has the same number
-# and order of labels as specified in the label_names list
-#
+    """
+    This function combines the colortable with the annotations ids to
+    write an annotation file (which contains colortable information)
+    Care needs to be taken that the colortable file has the same number
+    and order of labels as specified in the label_names list
+
+    Args:
+        annot_ids (ArrayLike): List of annotation ids
+        label_names (ArrayLike): list of label names
+        colortab_name (str): name of colortable
+        out_annot (ArrayLike): list of output annotations
+        append (str): [help] Defaults to ""
+    """
+
     #colortab_name="colortable_BA.txt"
     col_ids, col_names, col_colors = read_colortable(colortab_name)
     offset = 0
@@ -243,7 +322,23 @@ def write_annot(annot_ids, label_names, colortab_name, out_annot, append=""):
     fs.write_annot(out_annot, annot_ids, col_colors, col_names, fill_ctab=True)
 
 def create_annotation(options, verbose=True):
-# main function to map (if required), build  and write annotation
+    """
+    main function to map (if required), build  and write annotation
+
+    Args:
+        options (argparse.Namespace): object holding options
+            hemi
+            colortab
+            labeldir
+            white
+            outannot
+            cortex
+            append
+            srcsphere
+            trgsphere
+        verbose (bool): True if options should be printed. Defaults to True
+    """
+
     print()
     print("Map BA Labels Parameters:")
     print()

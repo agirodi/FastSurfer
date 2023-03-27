@@ -61,14 +61,22 @@ Date: Aug-31-2022
 
 h_sid        = 'subject id (name of directory within the subject directory)'
 h_sd         = 'subject directory path'
-h_hemi       = 'optioal: "lh" or "rh" (default run both hemispheres)'
+h_hemi       = 'optional: "lh" or "rh" (default run both hemispheres)'
 h_fsaverage  = 'optional: path to fsaverage (default is $FREESURFER_HOME/subjects/fsaverage)'
 
 
 def options_parse():
     """
     Command line option parser
+
+    Returns:
+        options (Namespace): object holding options
+            sid: subject id (name of directory within the subject directory)
+            sd: subject directory path
+            hemi: optional: "lh" or "rh" (default run both hemispheres)
+            fsaverage: optional: path to fsaverage (default is $FREESURFER_HOME/subjects/fsaverage)
     """
+
     parser = optparse.OptionParser(version='$Id:fs_balabels.py,v 1.0 2022/08/24 21:22:08 mreuter Exp $', usage=HELPTEXT)
     parser.add_option('--sid',       dest='sid',       help=h_sid)
     parser.add_option('--sd',        dest='sd',        help=h_sd)
@@ -88,8 +96,22 @@ def options_parse():
 
 
 def read_colortables(colnames,colappend,drop_unknown=True):
-# reads multiple colortables and appends extensions, 
-# drops unknown by default
+    """
+    reads multiple colortables and appends extensions,
+    drops unknown by default
+
+    Args:
+        colnames (ArrayLike): List of colornames
+        colappend (ArrayLike): List of appends for names
+        drop_unknown (bool): True if unknown colors should be dropped.
+            Defaults to True
+
+    Returns:
+        all_ids (ArrayLike): List of all ids
+        all_names (ArrayLike): List of all names
+        all_cols (ArrayLike): List of all colors
+    """
+#
     pos=0
     all_names = []
     all_ids = []

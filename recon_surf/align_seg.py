@@ -52,8 +52,8 @@ Date: Aug-24-2022
 """
 
 
-h_srcseg   = 'path to src source segmentation (e.g. aparc+aseg.mgz)'
-h_trgseg   = 'path to trg source segmentation '
+h_srcseg   = 'path to source segmentation (e.g. aparc+aseg.mgz)'
+h_trgseg   = 'path to target segmentation'
 h_affine   = 'register affine, instead of rigid (default), cannot be combined with --flipped'
 h_outlta   = 'path to output transform lta file'
 h_flipped  = 'register to left-right flipped as target aparc+aseg (cortical needed)'
@@ -61,7 +61,11 @@ h_flipped  = 'register to left-right flipped as target aparc+aseg (cortical need
 def options_parse():
     """
     Command line option parser
+
+    Returns:
+        options (argparse.Namespace): object holding options
     """
+
     parser = optparse.OptionParser(version='$Id:align_seg.py,v 1.0 2022/08/24 21:22:08 mreuter Exp $', usage=HELPTEXT)
     parser.add_option('--srcseg',  dest='srcseg',  help=h_srcseg)
     parser.add_option('--trgseg',  dest='trgseg',  help=h_trgseg)
@@ -75,7 +79,19 @@ def options_parse():
 
 
 def get_seg_centroids(seg_mov, seg_dst, label_ids=[]):
-# extracts the centroids of the segmentation labels for mov and dst in RAS coords
+    """
+    extracts the centroids of the segmentation labels for mov and dst in RAS coords
+
+    Args:
+        seg_mov: path to src segmentation (e.g. aparc+aseg.mgz) [help]
+        seg_dst: path to trg segmentation [help]
+        label_ids (ArrayLike): List of label ids to extract
+
+    Returns:
+        centroids_mov (np.ndarray): List of centorids of scr segmentation
+        centroids_dst (np.ndarray): List of centorids of trg segmentation
+    """
+
     if not label_ids:
         # use all joint labels except -1 and 0:
         nda1 = sitk.GetArrayFromImage(seg_mov)
@@ -111,8 +127,21 @@ def get_seg_centroids(seg_mov, seg_dst, label_ids=[]):
 
 
 def align_seg_centroids(seg_mov, seg_dst, label_ids=[], affine=False):
-# Aligns the segmentations based on label centroids (rigid is default)#
-# returns RAS2RAS transform
+    """
+    Aligns the segmentations based on label centroids (rigid is default)
+    returns RAS2RAS transform
+
+    Args:
+        seg_mov: path to src segmentation (e.g. aparc+aseg.mgz)
+        seg_dst: path to trg segmentation
+        label_ids (ArrayLike): List of label ids to align. Defaults to []
+        affine (bool): True if affine should be returned.
+            False if rigid should be returned. Defaults to False
+
+    Returns:
+        T: aligned centroids
+    """
+
     # get centroids of each label in image
     centroids_mov, centroids_dst = get_seg_centroids(seg_mov, seg_dst, label_ids)
     # register
@@ -125,9 +154,16 @@ def align_seg_centroids(seg_mov, seg_dst, label_ids=[], affine=False):
 
 
 def align_flipped(seg):
-    # left - right registration (make upright)
-    # segmentation should be aparc+aseg (DKT or not)
-    # we are registering cortial lables
+    """
+    left - right registration (make upright)
+    we are registering cortial lables
+
+    Args:
+        seg: segmentation file. Should be aparc+aseg (DKT or not)
+
+    Returns:
+        Tsqrt: [help]
+    """
 
     lhids = np.array([
         1002, 1003, 1005, 1006, 1007, 1008, 1009, 1010, 1011, 1012, 1013, 1014,
@@ -164,7 +200,6 @@ def align_flipped(seg):
 
 
 if __name__ == "__main__":
-
     # Command Line options are error checking done here
     options = options_parse()
 

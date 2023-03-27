@@ -25,6 +25,17 @@ from nibabel.freesurfer.mghformat import MGHHeader
 
 
 def mgh_from_sitk(sitk_img, orig_mgh_header=None):
+    """
+    converts sitk image to mgh image
+
+    Args:
+        sitk_img (SimpleITK.Image): sitk image
+        orig_mgh_header (nibabel.freesurfer.mghformat.MGHHeader): original mgh image header
+
+    Returns:
+        mgh_img (nib.MGHImage): mgh image
+    """
+
     if orig_mgh_header:
         h1 = MGHHeader.from_header(orig_mgh_header)
     else:
@@ -52,6 +63,15 @@ def mgh_from_sitk(sitk_img, orig_mgh_header=None):
     
     
 def sitk_from_mgh(img):
+    """
+    converts mgh image to sitk image
+
+    Args:
+        img (nib.MGHImage): mgh image
+
+    Returns:
+        img_sitk (SimpleITK.Image): sitk image
+    """
     # reorder data as structure differs between nibabel and sITK:
     data = np.swapaxes(np.asanyarray(img.dataobj),0,2)
     # sitk can only create image with system native endianness 
@@ -71,6 +91,20 @@ def sitk_from_mgh(img):
     
 
 def readITKimage(filename, vox_type = None, with_header=False):
+    """
+    reads the itk image
+
+    Args:
+        filename (str): Filename of the image
+        vox_type: Voxel type. Defaults to None
+        with_header (bool): If True, then header is also returned. Defaults to False
+
+    Returns:
+        itkimage ():
+        header
+
+    """
+
     # If image is nifti image
     header = None
     if filename[-7:] == ".nii.gz" or filename[-4:] == ".nii":
