@@ -18,6 +18,19 @@ import torch
 
 
 def get_optimizer(model, cfg):
+    """
+    get an instance of requested optimizer
+
+    Args:
+        model (): [help]
+        cfg (yacs.config.CfgNode):
+
+    Returns:
+        torch.optim.optimizer.Optimizer: SGD, Adam, AdamW or rmsprop optimizer
+
+    Raises:
+        NotImplementedError: Optimizer is not supported
+    """
     if cfg.OPTIMIZER.OPTIMIZING_METHOD == 'sgd':
         return torch.optim.SGD(
             model.parameters(),

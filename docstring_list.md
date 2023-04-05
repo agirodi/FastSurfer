@@ -1,9 +1,5 @@
 ### To-Do:
 
-- ./FastSurferCNN/models/optimizer.py
-- ./FastSurferCNN/utils/load_config.py
-- ./FastSurferCNN/utils/lr_scheduler.py
-- ./FastSurferCNN/utils/meters.py
 - ./FastSurferCNN/utils/metrics.py
 - ./FastSurferCNN/utils/misc.py
 - ./recon_surf/lta.py
@@ -20,6 +16,7 @@
 
 ### Doing:
 
+- ./FastSurferCNN/utils/meters.py
 - ./FastSurferCNN/models/sub_module.py
 - ./FastSurferCNN/models/networks.py
 - ./FastSurferCNN/run_prediction.py 
@@ -28,6 +25,9 @@
 
 ### Control:
 
+- ./FastSurferCNN/utils/lr_scheduler.py
+- ./FastSurferCNN/utils/load_config.py
+- ./FastSurferCNN/models/optimizer.py
 - . /recon_surf/align_points.py
 - ./recon_surf/image_io.py
 - ./recon_surf/fs_balabels.py

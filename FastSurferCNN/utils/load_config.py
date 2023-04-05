@@ -22,7 +22,18 @@ def get_config(args):
     """
     Given the arguments, load and initialize the confiurations.
 
+    Args:
+        args: possible arguments for the cfg:
+            cfg_file (String): Config file name
+            opts (list): List containing optimizer
+            rng_seed (int): randomness seed
+            output_dir (Str): Output directory
+
+    Returns:
+        yacs.config.CfgNode: Configuration node
+
     """
+
     # Setup cfg.
     cfg = get_cfg_defaults()
     # Load config from cfg.
@@ -44,6 +55,16 @@ def get_config(args):
 
 
 def load_config(cfg_file):
+    """
+    Loads an existing configuration from a file
+
+    Args:
+        cfg_file (String): Configuration file name
+
+    Returns:
+        yacs.config.CfgNode: Configuration node
+    """
+
     # setup base
     cfg = get_cfg_defaults()
     cfg.EXPR_NUM = "Default"

@@ -18,6 +18,21 @@ import torch.optim.lr_scheduler as scheduler
 
 
 def get_lr_scheduler(optimzer, cfg):
+    """
+
+    Args:
+        optimzer (torch.optim.optimizer.Optimizer): optimizer to use
+        cfg (yacs.config.CfgNode): configuration node
+
+    Returns:
+        torch.optim.lr_scheduler.LRScheduler or None: step_lr or cosineWarmRestarts
+            scheduler or nothing if NoScheduler is requested
+
+
+    Raises:
+        ValueError: Given lr scheduler is not supported
+    """
+
     scheduler_type = cfg.OPTIMIZER.LR_SCHEDULER
     if scheduler_type == 'step_lr':
         return scheduler.StepLR(
@@ -36,3 +51,4 @@ def get_lr_scheduler(optimzer, cfg):
         return None
     else:
         raise ValueError(f"{scheduler_type} lr scheduler is not supported ")
+    

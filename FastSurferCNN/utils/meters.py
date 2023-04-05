@@ -26,6 +26,29 @@ logger = logging.getLogger(__name__)
 
 
 class Meter:
+    """
+    Methods:
+        reset():
+        enable_confusion_mat(): Enables the confusion matrix
+        disable_confusion_mat(): Disables the confusion matrix
+        update_stats():
+        write_summary():
+        log_iter():
+        log_epoch():
+
+    Attributes:
+        _cfg. configuration Node
+        mode
+        confusion_mat
+        class_names
+        dice_score
+        batch_losses
+        writer
+        global_iter
+        total_iter_num
+        total_epochs
+
+    """
     def __init__(self,
                  cfg,
                  mode,
@@ -50,20 +73,50 @@ class Meter:
         self.total_epochs = total_epoch
 
     def reset(self):
+        """
+        Resets the batch loss and dice score
+        """
+
         self.batch_losses = []
         self.dice_score.reset()
 
     def enable_confusion_mat(self):
+        """
+        Enables the confusion matrix
+        """
+
         self.confusion_mat = True
 
     def disable_confusion_mat(self):
+        """
+        Disables the confusion matrix
+        """
+
         self.confusion_mat = False
 
     def update_stats(self, pred, labels, batch_loss):
+        """
+        Updates the dice score and batch loss
+
+        Args:
+            pred (ArrayLike): Calculated Prediction
+            labels (ArrayLike): Ground Truth labels
+            batch_loss (): [help]
+        """
+
         self.dice_score.update((pred, labels), self.confusion_mat)
         self.batch_losses.append(batch_loss.item())
 
     def write_summary(self, loss_total, lr=None, loss_ce=None, loss_dice=None):
+        """
+
+        Args:
+            loss_total ():
+            lr ():
+            loss_ce ():
+            loss_dice ():
+        """
+
         self.writer.add_scalar(f"{self.mode}/total_loss", loss_total.item(), self.global_iter)
         if self.mode == 'Train':
             self.writer.add_scalar("Train/lr", lr[0], self.global_iter)
