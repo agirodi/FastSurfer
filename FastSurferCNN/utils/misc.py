@@ -30,13 +30,18 @@ from FastSurferCNN.utils import logging
 def plot_predictions(images_batch, labels_batch, batch_output, plt_title, file_save_name):
     """
     Function to plot predictions from validation set.
-    :param images_batch:
-    :param labels_batch:
-    :param batch_output:
-    :param plt_title:
-    :param file_save_name:
-    :return:
+
+    Args:
+        images_batch (torch.tensor): Image Batch
+        labels_batch (torch.tensor): Batch of labels
+        batch_output (torch.tensor): [help]
+        plt_title (str): Tile of the plot
+        file_save_name (str): file path and name where figure should be saved
+
+    Returns:
+        object:
     """
+
     f = plt.figure(figsize=(20, 10))
     n, c, h, w = images_batch.shape
     mid_slice = c // 2
@@ -70,6 +75,19 @@ def plot_confusion_matrix(cm,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues,
                           file_save_name="temp.pdf"):
+    """
+
+    Args:
+        cm (array-like):
+        classes (array-like): List of Classes
+        title (str): Name of title
+        cmap (str or Colormap): The Colormap instance or registered colormap name used to map scalar data to colors.
+        file_save_name (str): File path and name where figure should be saved
+
+    Returns:
+        fig (matplotlib.figure.Figure): Plotted figure
+    """
+
     n_classes = len(classes)
 
     fig, ax = plt.subplots()
@@ -110,6 +128,16 @@ def plot_confusion_matrix(cm,
 
 
 def find_latest_experiment(path):
+    """
+    Find latest experiment
+
+    Args:
+        path (str): path to experiments
+
+    Returns:
+        int: latest experiment
+    """
+
     list_of_experiments = os.listdir(path)
     list_of_int_experiments = []
     for exp in list_of_experiments:
@@ -126,6 +154,15 @@ def find_latest_experiment(path):
 
 
 def check_path(path):
+    """
+
+    Args:
+        path (str): Path to make if not existent
+
+    Returns:
+        path (str): Path to make. Same as input
+    """
+
     os.makedirs(path, exist_ok=True)
     return path
 
@@ -137,7 +174,12 @@ def update_num_steps(dataloader, cfg):
 def find_device(device: str = "auto", flag_name:str = "device") -> torch.device:
     """Create a device object from the device string passed, including detection of devices if device is not defined
     or "auto".
+
+    Args:
+        device (str): Device to be created. Defaults to "auto"
+        flag_name (str): Flag for the Device. Defaults to "device"
     """
+
     logger = logging.get_logger(__name__ + ".auto_device")
     # if specific device is requested, check and stop if not available:
     if device.split(':')[0] == "cuda" and not torch.cuda.is_available():

@@ -42,11 +42,18 @@ def iou_score(pred_cls, true_cls, nclass=79):
 def precision_recall(pred_cls, true_cls, nclass=79):
     """
     Function to calculate recall (TP/(TP + FN) and precision (TP/(TP+FP) per class
-    :param pytorch.Tensor pred_cls: network prediction (categorical)
-    :param pytorch.Tensor true_cls: ground truth (categorical)
-    :param int nclass: number of classes
-    :return:
+
+    Args:
+        pred_cls (pytorch.Tensor): network prediction (categorical)
+        true_cls (pytorch.Tensor): ground truth (categorical)
+        nclass (itn): number of classes
+
+    Returns:
+        np.ndarray: tpos [help]
+        np.ndarray: tpos_fneg [help]
+        np.ndarray: tpos_fpos [help]
     """
+
     tpos_fneg = []
     tpos_fpos = []
     tpos = []
@@ -65,6 +72,7 @@ def precision_recall(pred_cls, true_cls, nclass=79):
 class DiceScore:
     """
         Accumulating the component of the dice coefficient i.e. the union and intersection
+
     Args:
         op (callable): a callable to update accumulator. Method's signature is `(accumulator, output)`.
             For example, to compute arithmetic mean value, `op = lambda a, x: a + x`.

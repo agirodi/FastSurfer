@@ -1,6 +1,5 @@
 ### To-Do:
 
-- ./FastSurferCNN/utils/metrics.py
 - ./FastSurferCNN/utils/misc.py
 - ./recon_surf/lta.py
 - ./recon_surf/map_surf_label.py
@@ -25,6 +24,7 @@
 
 ### Control:
 
+- ./FastSurferCNN/utils/metrics.py
 - ./FastSurferCNN/utils/lr_scheduler.py
 - ./FastSurferCNN/utils/load_config.py
 - ./FastSurferCNN/models/optimizer.py
