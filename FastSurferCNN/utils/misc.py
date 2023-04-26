@@ -75,13 +75,14 @@ def plot_confusion_matrix(cm,
                           title='Confusion matrix',
                           cmap=plt.cm.Blues,
                           file_save_name="temp.pdf"):
-    """
+    """ Plots confusion matrix
 
     Args:
         cm (array-like):
         classes (array-like): List of Classes
         title (str): Name of title
-        cmap (str or Colormap): The Colormap instance or registered colormap name used to map scalar data to colors.
+        cmap (str or Colormap): The Colormap instance or registered colormap name
+                                used to map scalar data to colors.
         file_save_name (str): File path and name where figure should be saved
 
     Returns:
@@ -154,7 +155,7 @@ def find_latest_experiment(path):
 
 
 def check_path(path):
-    """
+    """ Creates the given path
 
     Args:
         path (str): Path to make if not existent

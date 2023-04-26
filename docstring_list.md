@@ -1,8 +1,6 @@
 ### To-Do:
 
-- ./FastSurferCNN/utils/misc.py
-- ./recon_surf/lta.py
-- ./recon_surf/map_surf_label.py
+
 - ./recon_surf/N4_bias_correct.py
 - ./recon_surf/paint_cc_into_pred.py
 - ./recon_surf/quick_qc.py
@@ -15,15 +13,19 @@
 
 ### Doing:
 
-- ./FastSurferCNN/utils/meters.py
-- ./FastSurferCNN/models/sub_module.py
-- ./FastSurferCNN/models/networks.py
-- ./FastSurferCNN/run_prediction.py 
+- ./recon_surf/map_surf_label.py
 - ./FastSurferCNN/data_loader/dataset.py
 - ./FastSurferCNN/data_loader/data_utils.py
 
 ### Control:
 
+- ./FastSurferCNN/run_prediction.py 
+
+- ./FastSurferCNN/models/networks.py
+- ./FastSurferCNN/models/sub_module.py
+- ./FastSurferCNN/utils/meters.py
+- ./recon_surf/lta.py
+- ./FastSurferCNN/utils/misc.py
 - ./FastSurferCNN/utils/metrics.py
 - ./FastSurferCNN/utils/lr_scheduler.py
 - ./FastSurferCNN/utils/load_config.py

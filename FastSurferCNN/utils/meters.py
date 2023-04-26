@@ -27,7 +27,7 @@ logger = logging.getLogger(__name__)
 
 class Meter:
     """
-    Methods:
+    Methods: [help]
         reset():
         enable_confusion_mat(): Enables the confusion matrix
         disable_confusion_mat(): Disables the confusion matrix
@@ -36,19 +36,19 @@ class Meter:
         log_iter():
         log_epoch():
 
-    Attributes:
-        _cfg. configuration Node
-        mode
-        confusion_mat
-        class_names
-        dice_score
-        batch_losses
-        writer
-        global_iter
-        total_iter_num
-        total_epochs
-
+    Attributes: [help]
+        _cfg (yacs.config.CfgNode): configuration Node
+        mode (str):
+        confusion_mat (bool): Defaults to False
+        class_names:
+        dice_score:
+        batch_losses:
+        writer: Defaults to None
+        global_iter: Defaults to None
+        total_iter_num: Defaults to None
+        total_epochs: Defaults to None
     """
+
     def __init__(self,
                  cfg,
                  mode,
@@ -101,20 +101,20 @@ class Meter:
         Args:
             pred (ArrayLike): Calculated Prediction
             labels (ArrayLike): Ground Truth labels
-            batch_loss (): [help]
+            batch_loss ([help]): Batch loss
         """
 
         self.dice_score.update((pred, labels), self.confusion_mat)
         self.batch_losses.append(batch_loss.item())
 
     def write_summary(self, loss_total, lr=None, loss_ce=None, loss_dice=None):
-        """
+        """ Write a summary of [help]
 
         Args:
             loss_total ():
-            lr ():
-            loss_ce ():
-            loss_dice ():
+            lr (ArrayLike): Defaults to None
+            loss_ce (): Defaults to None
+            loss_dice (): Defaults to None
         """
 
         self.writer.add_scalar(f"{self.mode}/total_loss", loss_total.item(), self.global_iter)
@@ -128,6 +128,13 @@ class Meter:
         self.global_iter += 1
 
     def log_iter(self, cur_iter, cur_epoch):
+        """ Logs iteration
+
+        Args:
+            cur_iter (int): Current number of iterations
+            cur_epoch (int): Current number of iterations
+        """
+
         if (cur_iter+1) % self._cfg.TRAIN.LOG_INTERVAL == 0:
             logger.info("{} Epoch [{}/{}] Iter [{}/{}] with loss {:.4f}".format(self.mode,
                 cur_epoch + 1, self.total_epochs,
@@ -136,6 +143,12 @@ class Meter:
             ))
 
     def log_epoch(self, cur_epoch):
+        """ Logs epoch
+
+        Args:
+            cur_epoch (int): Current number of epochs
+        """
+
         dice_score = self.dice_score.compute_dsc()
         self.writer.add_scalar(f"{self.mode}/mean_dice_score", dice_score, cur_epoch)
         if self.confusion_mat:

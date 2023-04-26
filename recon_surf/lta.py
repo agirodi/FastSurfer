@@ -21,6 +21,20 @@
 
 
 def writeLTA(filename, T, src_fname, src_header, dst_fname, dst_header):
+    """ Writes linear transform array info to a file
+
+    Args:
+        filename (str): File to write on
+        T (): [help]
+        src_fname (str): source filename
+        src_header (): source header
+        dst_fname (str): destination filename
+        dst_header (): destination header
+
+    Raises:
+        ValueError: src_header format missing field
+    """
+
     from datetime import datetime
     import getpass
     

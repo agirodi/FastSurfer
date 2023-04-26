@@ -32,8 +32,34 @@ logger = logging.getLogger(__name__)
 class MultiScaleOrigDataThickSlices(Dataset):
     """
     Class to load MRI-Image and process it to correct format for network inference
+
+    Attributes:
+        img_filename (str): Name of the file
+        plane (str):
+        slice_thickness:
+        base_res
+        zoom:
+        images:
+        count:
+        transforms:
+
+
+    Functions:
+        _get_scale_factor(): Get scaling factor
+        __getitem__(index):  Returns image and scale factor of given index
+        __len__(): Returns the count
     """
+
     def __init__(self, img_filename, orig_data, orig_zoom, cfg, transforms=None):
+        """
+
+        Args:
+            img_filename (str): Name of the file
+            orig_data (ArrayLike): Orignal Data
+            orig_zoom (ArrayLike): Original zoomfactors
+            cfg (yacs.config.CfgNode): Configuration Node
+            transforms (): Transformer for the image. Defaults to None
+        """
         assert orig_data.max() > 0.8, f"Multi Dataset - orig fail, max removed {orig_data.max()}"
         self.img_filename = img_filename
         self.plane = cfg.DATA.PLANE
@@ -76,7 +102,7 @@ class MultiScaleOrigDataThickSlices(Dataset):
             zoom (int):
 
         Returns:
-            np.ndarray(float32): scale factor along x and y dimension
+            np.ndarray(float): scale factor along x and y dimension
         """
 
         scale = self.base_res / np.asarray(self.zoom)
@@ -100,7 +126,18 @@ class MultiScaleOrigDataThickSlices(Dataset):
 class MultiScaleDataset(Dataset):
     """
     Class for loading aseg file with augmentations (transforms)
+
+    Attributes:
+
+    Functions:
+        get_subject_names():
+        _get_scale_factor(img_zoom, scale_aug):
+        _pad(image):
+        unify_imgs(img, label, weight):
+        __getitem__():
+        __len__():
     """
+
     def __init__(self, dataset_path, cfg, gn_noise=False, transforms=None):
 
         self.max_size = cfg.DATA.PADDED_SIZE

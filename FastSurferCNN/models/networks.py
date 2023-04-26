@@ -34,13 +34,14 @@ class FastSurferCNNBase(nn.Module):
     * Loss Function (weighted Cross-Entropy and dice loss)
 
     Attributes:
-        encode[1-4] (CompetitiveEncoderBlock): The Competitive Encoder Blocks
-        decode[1-4] (CompetitiveDecoderBlock): The Competitive Decoder Blocks
-        bottleneck (CompetitiveDenseBlock): The Bottleneck Block
+        encode1, encode2, encode3, encode4 (CompetitiveEncoderBlock): Competitive Encoder Blocks
+        decode1, decode2, decode3, decode4 (CompetitiveDecoderBlock): Competitive Decoder Blocks
+        bottleneck (CompetitiveDenseBlock): Bottleneck Block
 
     Functions:
         forward: Computational graph
     """
+
     def __init__(self, params, padded_size=256):
         """ Initialization of FastSurferCNNBase
 
@@ -79,10 +80,10 @@ class FastSurferCNNBase(nn.Module):
         """
         Computational graph
 
-        Args:
-            x (Tensor): input image [N, C, H, W]
-            scale_factor (): [N, 1] (Default: None)
-            scale_factor_out (): (Default: None)
+        Args: [help]
+            x (tensor): input image [N, C, H, W]
+            scale_factor (tensor): [N, 1] Defaults to None
+            scale_factor_out (): Defaults to None
 
         Returns:
             tensor: prediction logits
@@ -105,7 +106,7 @@ class FastSurferCNNBase(nn.Module):
 
 class FastSurferCNN(FastSurferCNNBase):
     """
-    [HELP]
+    [HELP] Main Fastsurfer CNN Network
 
     Attributes:
         classifier (sub_module.ClassifierBlock): Initialized Classification Block
@@ -247,7 +248,7 @@ class FastSurferVINN(FastSurferCNNBase):
             scale_factor_out (): (Default: None)
 
         Returns:
-            tensor: prediction logits
+            logits(tensor): prediction logits
         """
 
         # Input block + Flex to 1 mm
@@ -291,7 +292,7 @@ def build_model(cfg):
         cfg (yacs.config.CfgNode): Node of configs to be used
 
     Returns:
-        FastSurferCNNBase: Object of the initialized model
+        model (FastSurferCNNBase): Object of the initialized model
     """
 
     assert (cfg.MODEL.MODEL_NAME in _MODELS.keys()),\

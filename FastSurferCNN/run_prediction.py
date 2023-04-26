@@ -94,7 +94,7 @@ def removesuffix(string, suffix):
         suffix (str): suffix to be removed
 
     Returns:
-        object:
+        Str: Suffix removed string
     """
     import sys
     if sys.version_info.minor >= 9:
@@ -108,8 +108,8 @@ def removesuffix(string, suffix):
 # Input array preparation
 ##
 class RunModelOnData:
-    """
-    runs the model prediction on given data [help]
+    """[help]
+    runs the model prediction on given data
 
     Functions:
         __init__(): constructor
@@ -150,19 +150,13 @@ class RunModelOnData:
 
         Args:
             args (argparse.Namespace):
-                pred_name():
-                conf_name():
-                orig_name():
-                strip():
-                out_dir():
-                run_viewagg_on():
-                lut():
-                gn():
-                ckpt_cor():
-                ckpt_sag():
-                ckpt_ax():
-                device():
-                hires():
+                pred_name (str):
+                conf_name (str):
+                orig_name (str):
+                remove_suffix ():
+                sf (float): Defaults to 1.0
+                out_dir (str): directory of output
+                viewagg_device(str): device to run viewagg on. Can be auto, cuda or cpu
         """
 
         self.pred_name = args.pred_name

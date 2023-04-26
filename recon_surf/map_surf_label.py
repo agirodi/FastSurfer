@@ -59,7 +59,17 @@ h_outlabel   = 'output label file'
 def options_parse():
     """
     Command line option parser
+
+    Returns:
+        options:
+            srclabel (str): path to src surface label file
+            srcsphere (str): path to src sphere.reg
+            trgsphere (str): path to trg sphere.reg
+            trgsurf (str): path to trg surf (usually white) to write coordinates into label file
+            trgsid (str): target subject id, also written into label file
+            outlabel (str): output label file
     """
+
     parser = optparse.OptionParser(version='$Id:map_surf_label.py,v 1.0 2022/08/24 21:22:08 mreuter Exp $', usage=HELPTEXT)
     parser.add_option('--srclabel',  dest='srclabel',  help=h_srclabel)
     parser.add_option('--srcsphere', dest='srcsphere', help=h_srcsphere)
@@ -76,10 +86,23 @@ def options_parse():
 
 
 def writeSurfLabel(filename, sid, label, values, surf):
-    # writes a FS surface label file to filename (e.g. lh.labelname.label)
-    # stores sid string in the header, then number of vertices
-    # and table of vertex index, RAS wm-surface coords (taken from surf)
-    # and values (which can be zero)
+    """
+    writes a FS surface label file to filename (e.g. lh.labelname.label)
+    stores sid string in the header, then number of vertices
+    and table of vertex index, RAS wm-surface coords (taken from surf)
+    and values (which can be zero)
+
+    Args: [help]
+        filename (str): File there surface label is written
+        sid (str): Subject id
+        label ():
+        values (ArrayLike):
+        surf (): Surface coordinations
+
+    Raises:
+        ValueError: Label and values should have same sizes
+    """
+
     if values is None:
         values = np.zeros(label.shape)
     if values.size != label.size :
@@ -91,12 +114,24 @@ def writeSurfLabel(filename, sid, label, values, surf):
 
 
 def getSurfCorrespondence(src_sphere, trg_sphere, tree=None):
-    # For each vertex in src_sphere finds the closest vertex in trg_sphere
-    # spheres are Nx3 arrays of coordinates on the sphere (usually R=100 FS format)
-    # *_sphere can also be a file name of the sphere.reg files, then we load it.
-    # Will return indices, distances and the KDtree of the trg surface.
-    # The KDtree can be passed in cases where src moves around and trg stays fixed
-    #
+    """
+    For each vertex in src_sphere finds the closest vertex in trg_sphere
+    spheres are Nx3 arrays of coordinates on the sphere (usually R=100 FS format)
+    *_sphere can also be a file name of the sphere.reg files, then we load it.
+    Will return indices, distances and the KDtree of the trg surface.
+    The KDtree can be passed in cases where src moves around and trg stays fixed
+
+    Args:
+        src_sphere ():
+        trg_sphere ():
+        tree ():
+
+    Returns:
+        mapping ():
+        distances ():
+        tree ():
+    """
+
     # We can also work with file names instead of surface vertices
     if isinstance(src_sphere, str):
         src_sphere = fs.read_geometry(src_sphere, read_metadata=False)[0]
@@ -116,13 +151,30 @@ def getSurfCorrespondence(src_sphere, trg_sphere, tree=None):
 
 
 def mapSurfLabel(src_label_name, out_label_name, trg_surf, trg_sid, rev_mapping):
-    # maps a label from src surface according to the correspondence
-    # in rev_mapping (! a mapping from target to source, listing the 
-    # corresponding src vertex for each vertex on the trg surface)
-    # trg_surf is passed so that the label file will list the 
-    # correct coordinates (usually the white surface), can be vetrices or filename
-    # trg_sid is the subject id (str) of the target subject (as 
-    # stored in the output label file header)
+    """
+    maps a label from src surface according to the correspondence
+    in rev_mapping (! a mapping from target to source, listing the
+    corresponding src vertex for each vertex on the trg surface)
+    trg_surf is passed so that the label file will list the
+    correct coordinates (usually the white surface), can be vetrices or filename
+    trg_sid is the subject id (str) of the target subject (as
+    stored in the output label file header)
+
+    Args:
+        src_label_name ():
+        out_label_name ():
+        trg_surf ():
+        trg_sid ():
+        rev_mapping ():
+
+    Returns:
+        trg_label ():
+        trg_values ():
+
+    Raises:
+        ValueError: Label and trg vertices should have same sizes
+    """
+    #
     print("Mapping label: {} ...".format(src_label_name))
     src_label, src_values = fs.read_label(src_label_name, read_scalars=True)
     smax = max(np.max(src_label),np.max(rev_mapping)) + 1
