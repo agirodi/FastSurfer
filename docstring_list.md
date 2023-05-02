@@ -1,7 +1,5 @@
 ### To-Do:
 
-
-- ./recon_surf/N4_bias_correct.py
 - ./recon_surf/paint_cc_into_pred.py
 - ./recon_surf/quick_qc.py
 - ./recon_surf/reduce_to_aseg.py
@@ -20,7 +18,7 @@
 ### Control:
 
 - ./FastSurferCNN/run_prediction.py 
-
+- ./recon_surf/N4_bias_correct.py
 - ./FastSurferCNN/models/networks.py
 - ./FastSurferCNN/models/sub_module.py
 - ./FastSurferCNN/utils/meters.py

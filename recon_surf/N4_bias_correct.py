@@ -110,15 +110,16 @@ def N4correctITK(itkimage, itkmask=None, shrink=4, levels=4, numiter=50, thres=0
     Perform the bias field correction.
 
     Args:
-        itkimage: itkImage[sitk.sitkFloat32]
-        itkmask: Optional[itkImage[sitk.sitk.Uint8]
-        shrink: Union[numbers.Rational]
-        levels: int
-        numiter: int
-        thres: float
-        rescale: bool
+        itkimage (itkImage[sitk.sitkFloat32]): n-dimensional image
+        itkmask (itkImage[sitk.sitk.Uint8]): Image mask. Defaults to None. Optional
+        shrink (Union[numbers.Rational]): Shrink factors. Defaults to 4
+        levels (int): Number of levels for maximum number of iterations. Defaults to 4
+        numiter (int): Maximum number if iterations. Defaults 50
+        thres (float): Convergence threshold. Defaults to 0.0
+        rescale (bool): Whether image should be rescaled. Defaults to True
 
-    Returns: itkImage[sitk.sitkFloat32]
+    Returns:
+        itkImage[sitk.sitkFloat32]: Bias field corrected image
     """
 
     # if no mask is passed, create a simple mask from the image
@@ -169,6 +170,19 @@ def N4correctITK(itkimage, itkmask=None, shrink=4, levels=4, numiter=50, thres=0
 
 
 def normalizeWM(itkimage, itkmask=None, radius=50, centroid=None, targetWM=110):
+    """ Normalize WM image [help]
+
+    Args:
+        itkimage (itkImage[sitk.sitkFloat32]): n-dimensional image
+        itkmask (itkImage[sitk.sitk.Uint8]): Image mask. Defaults to None. Optional
+        radius (int): [help] Defaults to 50 [help]
+        centroid (): Image centroid. Defaults to None [help]
+        targetWM (int): Defaults to 110 [help]
+
+    Returns:
+        itkImage[sitk.sitkFloat32]: Normalized WM image
+    """
+
     # print("\nnormalizeWM:")
 
     mask_passed = True
@@ -235,6 +249,15 @@ def normalizeWM(itkimage, itkmask=None, radius=50, centroid=None, targetWM=110):
 
 
 def readTalairachXFM(fname):
+    """ Read TalairachXFM image
+
+    Args:
+        fname (str): Filename to TalairachXFM
+
+    Returns:
+        tal (np.ndarray): TalairachXFM image
+    """
+
     with open(fname) as f:
         lines = f.readlines()
     f.close()
@@ -254,6 +277,16 @@ def readTalairachXFM(fname):
 
 
 def getTalOriginVox(tal, image):
+    """ Get the original Talairach Voxel
+
+    Args:
+        tal (ArrayLike): [help]
+        image (itkImage): Original image
+
+    Returns:
+        vox_origin (VectorInt64): Original T
+    """
+
     talinv = np.linalg.inv(tal)
     tal_origin = np.array(talinv[0:3, 3]).ravel()
     # print("Tal Physical Origin: {}".format(tal_origin))

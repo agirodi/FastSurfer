@@ -97,7 +97,7 @@ def writeSurfLabel(filename, sid, label, values, surf):
         sid (str): Subject id
         label ():
         values (ArrayLike):
-        surf (): Surface coordinations
+        surf (ArrayLike): Surface coordinations
 
     Raises:
         ValueError: Label and values should have same sizes
@@ -122,9 +122,11 @@ def getSurfCorrespondence(src_sphere, trg_sphere, tree=None):
     The KDtree can be passed in cases where src moves around and trg stays fixed
 
     Args:
-        src_sphere ():
-        trg_sphere ():
-        tree ():
+        src_sphere (str or np.ndarray): Either filepath (as str) or surface vertices
+                                        of source sphere
+        trg_sphere (str or np.ndarray): Either filepath (as str) or surface vertices
+                                        of target sphere
+        tree (sklearn.neighbors._kd_tree.KDTree): Defaults to None
 
     Returns:
         mapping ():
