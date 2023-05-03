@@ -163,8 +163,8 @@ def mapSurfLabel(src_label_name, out_label_name, trg_surf, trg_sid, rev_mapping)
     stored in the output label file header)
 
     Args:
-        src_label_name ():
-        out_label_name ():
+        src_label_name (str):
+        out_label_name (str):
         trg_surf ():
         trg_sid ():
         rev_mapping ():
