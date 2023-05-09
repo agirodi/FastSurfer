@@ -44,7 +44,14 @@ Date: Jul-10-2020
 def argument_parse():
     """
     Command line option parser for reduce_to_aseg.py
+
+    Returns:
+        args:
+             input_cc (str): Path to input segmentation with Corpus Callosum (IDs 251-255 in FreeSurfer space)
+             input_pred (str): Path to input segmentation Corpus Callosum shoud be added to
+             output (str): Path to output (input segmentation + added CC)
     """
+
     parser = argparse.ArgumentParser(usage=HELPTEXT)
     parser.add_argument('--input_cc', '-in_cc', dest='input_cc',
                         help="path to input segmentation with Corpus Callosum (IDs 251-255 in FreeSurfer space)")
@@ -65,10 +72,14 @@ def paint_in_cc(pred, aseg_cc):
     Function to paint corpus callosum segmentation into prediction. Note, that this function
     modifies the original array and does not create a copy.
 
-    :param np.ndarray pred: deep-learning prediction
-    :param np.ndarray aseg_cc: aseg segmentation with CC
-    :return np.ndarray: prediction with added CC
+    Args:
+        pred (np.ndarray): Deep-learning prediction
+        aseg_cc (np.ndarray): Aseg segmentation with CC
+
+    Returns:
+        pred (np.ndarray): Prediction with added CC
     """
+
     cc_mask = (aseg_cc >= 251) & (aseg_cc <= 255)
     pred[cc_mask] = aseg_cc[cc_mask]
     return pred

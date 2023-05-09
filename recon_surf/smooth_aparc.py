@@ -56,7 +56,15 @@ h_outaparc = 'path to ouput aparc'
 def options_parse():
     """
     Command line option parser
+
+    Returns:
+        options:
+            insurf (str): Path to input aparc
+            incort (str): Path to input cortex label
+            inaparc (str): Path to input surface
+            outaparc (str): Path to ouput aparc
     """
+
     parser = optparse.OptionParser(version='$Id: smooth_aparc,v 1.0 2018/06/24 11:34:08 mreuter Exp $', usage=HELPTEXT)
     parser.add_option('--insurf',  dest='insurf', help=h_insurf)
     parser.add_option('--incort',  dest='incort', help=h_incort)
@@ -71,6 +79,16 @@ def options_parse():
 
 
 def get_adjM(trias, n):
+    """ [help]
+
+    Args:
+        trias ():
+        n ():
+
+    Returns:
+        adjM (np.ndarray): Adjoint matrix
+    """
+
     I = trias
     J = I[:, [1, 2, 0]]
     # flatten
@@ -84,13 +102,34 @@ def get_adjM(trias, n):
     return adjM
     
     
-def bincount2D_vectorized(a):    
+def bincount2D_vectorized(a):
+    """ Count number of occurrences of each value in array of non-negative ints [help]
+
+    Args:
+        a (np.ndarray): Array
+
+    Returns:
+        np.ndarray:
+    """
+
     N = a.max()+1
     a_offs = a + np.arange(a.shape[0])[:, None]*N
     return np.bincount(a_offs.ravel(), minlength=a.shape[0]*N).reshape(-1, N)
     
 
-def mode_filter(adjM, labels, fillonlylabel="", novote=[]): 
+def mode_filter(adjM, labels, fillonlylabel="", novote=[]):
+    """ [help]
+
+    Args:
+        adjM (np.ndarray): Adjoint matrix
+        labels (np.ndarray): List of labels
+        fillonlylabel (str): Label to fill exclusively. Defaults to ""
+        novote (np.ndarray): Entries that should not vote. Defaults to []
+
+    Returns:
+        labels_new (np.ndarray): New filtered labels
+    """
+
     # make sure labels lengths equals adjM dimension
     n = labels.shape[0]
     if n != adjM.shape[0] or n != adjM.shape[1]:
@@ -179,7 +218,14 @@ def mode_filter(adjM, labels, fillonlylabel="", novote=[]):
 def smooth_aparc(insurfname, inaparcname, incortexname, outaparcname):
     """ (string) -> None
     smoothes aparc
+
+    Args:
+        insurfname (str): Suface filepath and name of source
+        inaparcname (str): Annotation filepath and name of source
+        incortexname (str): Label filepath and name of source
+        outaparcname (str): Suface filepath and name of destination
     """
+
     # read input files
     print("Reading in surface: {} ...".format(insurfname))
     surf = read_geometry(insurfname, read_metadata=True)

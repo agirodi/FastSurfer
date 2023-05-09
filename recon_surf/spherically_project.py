@@ -68,12 +68,17 @@ Date: Jan-18-2016
 """
 
 h_input = 'path to input surface'
-h_output = 'path to ouput surface, spherically projected'
+h_output = 'path to output surface, spherically projected'
 
 
 def options_parse():
     """
     Command line option parser for spherically_project.py
+
+    Returns:
+        options:
+             input_surf (str): Path to input surface
+             output_surf (str): Path to output surface, spherically projected
     """
     parser = optparse.OptionParser(version='$Id: spherically_project,v 1.1 2017/01/30 20:42:08 ltirrell Exp $',
                                    usage=HELPTEXT)
@@ -89,19 +94,24 @@ def options_parse():
 
 def tria_spherical_project(tria, flow_iter=3, debug=False, use_cholmod=True):
     """
-    spherical(tria) computes the first three non-constant eigenfunctions
-           and then projects the spectral embedding onto a sphere. This works
-           when the first functions have a single closed zero level set,
-           splitting the mesh into two domains each. Depending on the original
-           shape triangles could get inverted. We also flip the functions
-           according to the axes that they are aligned with for the special
-           case of brain surfaces in FreeSurfer coordinates.
+    Computes the first three non-constant eigenfunctions
+        and then projects the spectral embedding onto a sphere. This works
+        when the first functions have a single closed zero level set,
+        splitting the mesh into two domains each. Depending on the original
+        shape triangles could get inverted. We also flip the functions
+        according to the axes that they are aligned with for the special
+        case of brain surfaces in FreeSurfer coordinates.
 
-    Inputs:   tria      : TriaMesh
-              flow_iter : mean curv flow iterations (3 should be enough)
+    Args:
+        tria (triaMesh): Triangle Mesh
+        flow_iter (int): Mean curv flow iterations (3 should be enough). Defaults to None
+        debug (): Defaults to False [help]
+        use_cholmod (bool): Try to use the Cholesky decomposition from the cholmod. Defaults to True
 
-    Outputs:  tria      : TriaMesh
+    Returns:
+        trianew (TriaMesh): Triangle Mesh spherically projected
     """
+
     if not tria.is_closed():
         raise ValueError('Error: Can only project closed meshes!')
 
@@ -278,7 +288,13 @@ def tria_spherical_project(tria, flow_iter=3, debug=False, use_cholmod=True):
 def spherically_project_surface(insurf, outsurf, use_cholmod=True):
     """ (string) -> None
     takes path to insurf, spherically projects it, outputs it to outsurf
+
+    Args:
+        insurf (): Path to input surface file
+        outsurf (str): Path to output surface file
+        use_cholmod (bool): Try to use the Cholesky decomposition from the cholmod. Defaults to True
     """
+
     surf = read_geometry(insurf, read_metadata=True)
     projected = tria_spherical_project(TriaMesh(surf[0], surf[1]), flow_iter=3, use_cholmod=use_cholmod)
     fs.write_geometry(outsurf, projected.v, projected.t, volume_info=surf[2])

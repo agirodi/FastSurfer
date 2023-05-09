@@ -66,7 +66,16 @@ h_out       = 'path to output txt files for angles'
 def options_parse():
     """
     Command line option parser
+
+    Returns:
+        options:
+            srcsphere (str): Path to src ?h.sphere
+            srcaparc (str): Path to src corresponding cortical parcellation
+            trgsphere (str): Path to trg ?h.sphere
+            trgaparc (str): Path to trg corresponding cortical parcellation
+            out (str): Path to output txt files for angles
     """
+
     parser = optparse.OptionParser(version='$Id: rotate_sphere.py,v 1.0 2022/03/18 21:22:08 mreuter Exp $', usage=HELPTEXT)
     parser.add_option('--srcsphere', dest='srcsphere', help=h_srcsphere)
     parser.add_option('--srcaparc',  dest='srcaparc',  help=h_srcaparc)
@@ -82,12 +91,26 @@ def options_parse():
 
 
 def align_aparc_centroids(v_mov, labels_mov, v_dst, labels_dst, label_ids=[]):
-# Aligns centroid of aparc parcels on the sphere (Attention mapping back to sphere!)
-    # inferiorparietal,inferiortemporal,lateraloccipital,postcentral, posteriorsingulate
-    #  precentral, precuneus, superiorfrontal, supramarginal
-    #lids=np.array([8,9,11,22,23,24,25,28,31])
-    #lids=np.array([8,9,22,24,31])
-    # lids=np.array([8,22,24])
+    """
+    Aligns centroid of aparc parcels on the sphere (Attention mapping back to sphere!)
+
+    Args:
+        v_mov (np.ndarray): Vertices of aparc pareclation to move.
+        labels_mov (np.ndarray): Labels of aparc parcelation to move.
+        v_dst (np.ndarray): Vertices of aparc pareclation for rotation destination.
+        labels_dst (np.ndarray): Labels of aparc parcelation for rotation destination.
+        label_ids (np.ndarray): Defaults to []
+
+    Returns:
+        R (np.ndarray): Rotation Matrix
+    """
+
+    #nferiorparietal, inferiortemporal, lateraloccipital, postcentral, posteriorsingulate
+    #precentral, precuneus, superiorfrontal, supramarginal
+    #lids = np.array([8, 9, 11, 22, 23, 24, 25, 28, 31])
+    #lids = np.array([8, 9, 22, 24, 31])
+    #lids = np.array([8, 22, 24])
+
     if not label_ids:
         # use all joint labels except -1 and 0:
         lids=np.intersect1d(labels_mov,labels_dst)

@@ -24,11 +24,18 @@ from lapy.read_geometry import read_geometry
 def options_parse():
     """
     Command line option parser for spherically_project.py
+
+    Returns:
+        options:
+             input_surf (str): Path to input surface
+             output_surf (str): Path to output surface
+             in_pretess (str): path and name of pretess file used (info missing when using marching cube). Defaults to None
     """
+
     parser = optparse.OptionParser(version='$Id: rewrite_mc_surface,v 1.1 2020/06/23 15:42:08 henschell $',
                                    usage='Function to load and resafe surface under a given name')
     parser.add_option('--input', '-i', dest='input_surf', help='path to input surface')
-    parser.add_option('--output', '-o', dest='output_surf', help='path to ouput surface')
+    parser.add_option('--output', '-o', dest='output_surf', help='path to output surface')
     parser.add_option('--filename_pretess', '-p', dest='in_pretess', default=None,
                       help='path and name of pretess file used (info missing when using marching cube).')
     (options, args) = parser.parse_args()
@@ -43,10 +50,13 @@ def resafe_surface(insurf, outsurf, pretess):
     """
     takes path to insurf and rewrites it to outsurf thereby fixing vertex locs flag error
     (scannerRAS instead of surfaceRAS after marching cube)
-    :param str insurf: path and name of input surface
-    :param str outsurf: path and name of output surface
-    :param str pretess: path and name of file the input surface was created on (e.g. filled-pretess127.mgz)
+
+    Args:
+        insurf (str): Path and name of input surface
+        outsurf (str): Path and name of output surface
+        pretess (str): Path and name of file the input surface was created on (e.g. filled-pretess127.mgz)
     """
+
     surf = read_geometry(insurf, read_metadata=True)
 
     if not surf[2]['filename']:

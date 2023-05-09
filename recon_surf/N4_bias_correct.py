@@ -83,7 +83,21 @@ h_threads = '<int> number of threads, default: 1'
 def options_parse():
     """
     Command line option parser
+
+    Returns:
+        options:
+            invol (str): path to input.nii.gz
+            outvol (str): path to corrected.nii.gz
+            mask (str): path to mask.nii.gz. Defaults to None. Optional
+            shrink (int): Shrink factor. Defaults to  4
+            levels (int): Number of fitting levels. Defaults to 4
+            numiter (int): Max number of iterations per level. Defaults to 50
+            thres (float): Convergence threshold. Defaults to 0.0
+            skipwm (bool): Skip normalize WM to 110 (for UCHAR scale). Defaults to False
+            tal (str): file name of talairach.xfm if using this for finding origin. Defaults to None
+            threads (int): Number of threads. Defaults to 1
     """
+
     parser = optparse.OptionParser(version='$Id: N4_bias_correct.py,v 1.0 2022/03/18 21:22:08 mreuter Exp $',
                                    usage=HELPTEXT)
     parser.add_option('--in', dest='invol', help=h_invol)

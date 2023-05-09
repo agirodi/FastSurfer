@@ -35,9 +35,17 @@ def setup_options():
 
 
 def call(command, **kwargs):
-    """Run command with arguments. Wait for command to complete. Sends
-    output to logging module. The arguments are the same as for the Popen
-    constructor."""
+    """
+    Run command with arguments. Wait for command to complete. Sends
+    output to logging module.
+
+    Args:
+        command (str): Command to call
+        **kwargs (): Arguments. The same as for the Popen constructor. Defaults to None
+
+    Returns:
+        int: Returncode of called command
+    """
 
     kwargs['stdout'] = PIPE
     kwargs['stderr'] = PIPE
@@ -54,6 +62,17 @@ def call(command, **kwargs):
 
 
 def spherical_wrapper(command1, command2, **kwargs):
+    """
+
+    Args:
+        command1 (str): Command to call
+        command2 (str): Fallback command to call
+        **kwargs (): Arguments. The same as for the Popen constructor
+
+    Returns:
+        code_1 (int): Returncode of called command
+    """
+
     # First try to run standard spherical project
     print("Running command: {}".format(command1))
     code_1 = call(command1, **kwargs)
