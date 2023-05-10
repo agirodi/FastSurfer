@@ -36,10 +36,10 @@ class ToTensorTest(object):
         Convertes the image to float within range [0, 1] and make it torch compatible
 
         Args:
-            img (ndarray): image to be conformed
+            img (ndarray): Image to be conformed
 
         Returns:
-            ndarray: conformed image
+            img (ndarray): Conformed image
         """
 
         img = img.astype(np.float32)
@@ -59,8 +59,7 @@ class ZeroPad2DTest(object):
     """
     Pad the input with zeros to get output size
 
-    Functions:
-        __init__: constructor
+    Methods:
         pad: pads zeroes of image
         call: calls _pad()
     """
@@ -71,8 +70,9 @@ class ZeroPad2DTest(object):
 
         Args:
             output_size (float, Tuple[float, float]): size of the output image either as float or tuple of two floats
-            pos (str): position
+            pos (str): Position to test padding. Defaults to 'top_left'
         """
+        
         if isinstance(output_size, Number):
             output_size = (int(output_size), ) * 2
         self.output_size = output_size

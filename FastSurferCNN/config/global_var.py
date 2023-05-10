@@ -48,12 +48,13 @@ def get_class_names(plane, options):
     Returns the in options requested class names
 
     Args:
-        plane (str):
-        options (str):
+        plane (str): The name of the plane. Can be sagittal or other
+        options (ArrayLike): List of options to get. Can include "aseg" and/or "aparc"
 
     Returns:
-        list: list of class names
+        list [ArrayLike]: list of class names
     """
+    
     selection = []
     for opt in options:
         if plane == "sagittal":

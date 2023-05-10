@@ -21,18 +21,18 @@
 
 
 def writeLTA(filename, T, src_fname, src_header, dst_fname, dst_header):
-    """ Writes linear transform array info to a file
+    """ Writes linear transform array info to a .lta file
 
     Args:
         filename (str): File to write on
-        T (): [help]
-        src_fname (str): source filename
-        src_header (): source header
-        dst_fname (str): destination filename
-        dst_header (): destination header
+        T (ArrayLike): Linear transform array to be saved
+        src_fname (str): Source filename
+        src_header (dict): Source header
+        dst_fname (str): Destination filename
+        dst_header (dict): Destination header
 
     Raises:
-        ValueError: src_header format missing field
+        ValueError: Header format missing field (Source or Destination)
     """
 
     from datetime import datetime

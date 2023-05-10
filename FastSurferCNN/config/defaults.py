@@ -232,7 +232,7 @@ _C.RNG_SEED = 1
 
 def get_cfg_defaults():
     """
-    Get a yacs CfgNode object with default values for my_project.
+    Get a yacs CfgNode object with default values.
 
     Returns:
         yacs.config.CfgNode: Clone of default CfgNode
