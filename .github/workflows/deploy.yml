@@ -28,7 +28,7 @@ jobs:
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:gpu-${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:gpu-latest
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:gpu-${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:latest
       - name: Push Docker image GPU
-        run: docker push --all-tags ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:gpu-${{ github.event.release.tag_name }}
+        run: docker push --all-tags ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer
   deploy-cpu:
     runs-on: ubuntu-latest
     timeout-minutes: 120
@@ -50,5 +50,5 @@ jobs:
         run: |
           docker tag ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:cpu-${{ github.event.release.tag_name }} ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:cpu-latest
       - name: Push Docker image CPU
-        run: docker push --all-tags ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer:cpu-${{ steps.get_tag.outputs.tag }}
+        run: docker push --all-tags ${{ secrets.DOCKERHUB_USERNAME }}/fastsurfer
         
